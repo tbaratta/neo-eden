@@ -2,8 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const geminiRoutes = require('./routes/gemini');
-
 
 // Load environment variables
 dotenv.config();
@@ -12,20 +10,59 @@ dotenv.config();
 connectDB();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
-const mapRoutes = require('./routes/map');
-app.use('/api/maps', mapRoutes);
-app.use('/api/gemini', geminiRoutes);
 
-// Test route
+// Routes
+const geminiRoutes = require('./routes/gemini');
+const resources = require('./routes/resources');
+const users = require('./routes/user');
+const analyses = require('./routes/analysis');
+
+// API Routes
+
+app.use('/api/gemini', geminiRoutes);
+app.use('/api/resources', resources);
+app.use('/api/users', users);
+app.use('/api/analysis', analyses);
+
+// Welcome route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Neo-Eden backend!' });
+  res.json({
+    message: 'Welcome to Neo-Eden API',
+    version: '1.0.0',
+    documentation: '/api/docs',
+    endpoints: {
+      resources: '/api/resources',
+      users: '/api/users',
+      analysis: '/api/analysis'
+    }
+  });
+});
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({
+    message: 'Route not found',
+    availableEndpoints: {
+      resources: '/api/resources',
+      users: '/api/users',
+      analysis: '/api/analysis'
+    }
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({
+    message: err.message || 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err : {}
+  });
 });
 
 // Start server
