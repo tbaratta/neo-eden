@@ -34,6 +34,22 @@ const mapSchema = new mongoose.Schema({
     enum: ['POI', 'LANDMARK', 'RESOURCE', 'DANGER'], // Point of Interest types
     default: 'POI'
   },
+  markerType: {
+    type: String,
+    required: true,
+    enum: ['DEFAULT', 'QUEST', 'VENDOR', 'ENEMY', 'RESOURCE', 'SAFE_ZONE', 'DANGER_ZONE'],
+    default: 'DEFAULT'
+  },
+  zone: {
+    type: String,
+    required: true,
+    enum: ['SAFE', 'NEUTRAL', 'DANGER', 'PVP', 'EVENT'],
+    default: 'NEUTRAL'
+  },
+  zoneColor: {
+    type: String,
+    default: '#808080' // Default gray color
+  },
   createdAt: {
     type: Date,
     default: Date.now

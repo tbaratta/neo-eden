@@ -12,7 +12,10 @@ router.post('/', async (req, res) => {
         type: 'Point',
         coordinates: [req.body.longitude, req.body.latitude]
       },
-      type: req.body.type
+      type: req.body.type,
+      markerType: req.body.markerType,
+      zone: req.body.zone,
+      zoneColor: req.body.zoneColor
     });
 
     const savedMapPoint = await mapPoint.save();
@@ -26,6 +29,26 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const mapPoints = await Map.find();
+    res.json(mapPoints);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get points by marker type
+router.get('/marker/:markerType', async (req, res) => {
+  try {
+    const mapPoints = await Map.find({ markerType: req.params.markerType.toUpperCase() });
+    res.json(mapPoints);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get points by zone
+router.get('/zone/:zone', async (req, res) => {
+  try {
+    const mapPoints = await Map.find({ zone: req.params.zone.toUpperCase() });
     res.json(mapPoints);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -58,9 +81,9 @@ router.get('/nearby', async (req, res) => {
 // Get points within a bounding box
 router.get('/bounds', async (req, res) => {
   try {
-    const { swLng, swLat, neLng, neLat } = req.query;
+    const { swLng, swLat, neLng, neLat, zone, markerType } = req.query;
 
-    const pointsInBounds = await Map.find({
+    let query = {
       location: {
         $geoWithin: {
           $box: [
@@ -69,8 +92,17 @@ router.get('/bounds', async (req, res) => {
           ]
         }
       }
-    });
+    };
 
+    // Add optional filters
+    if (zone) {
+      query.zone = zone.toUpperCase();
+    }
+    if (markerType) {
+      query.markerType = markerType.toUpperCase();
+    }
+
+    const pointsInBounds = await Map.find(query);
     res.json(pointsInBounds);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -107,7 +139,10 @@ router.put('/:id', async (req, res) => {
     const updates = {
       name: req.body.name,
       description: req.body.description,
-      type: req.body.type
+      type: req.body.type,
+      markerType: req.body.markerType,
+      zone: req.body.zone,
+      zoneColor: req.body.zoneColor
     };
 
     // Only update location if coordinates are provided

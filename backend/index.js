@@ -18,7 +18,10 @@ app.use(express.json());
 
 // Routes
 const mapRoutes = require('./routes/map');
+const userRoutes = require('./routes/user');
+
 app.use('/api/maps', mapRoutes);
+app.use('/api/users', userRoutes);
 
 // Test route
 app.get('/', (req, res) => {
