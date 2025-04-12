@@ -1,16 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const Map = require('../models/Map');
+const {
+  geocodeAddress,
+  getPlaceDetails,
+  searchNearbyPlaces,
+  calculateDistance
+} = require('../utils/googleMaps');
 
-// Create a new map point
+// Create a new map point with address
 router.post('/', async (req, res) => {
   try {
+    let coordinates;
+    
+    // If address is provided, geocode it
+    if (req.body.address) {
+      const geoData = await geocodeAddress(req.body.address);
+      if (geoData) {
+        coordinates = geoData.coordinates;
+      } else {
+        return res.status(400).json({ message: 'Could not geocode address' });
+      }
+    } else {
+      coordinates = [req.body.longitude, req.body.latitude];
+    }
+
     const mapPoint = new Map({
       name: req.body.name,
       description: req.body.description,
       location: {
         type: 'Point',
-        coordinates: [req.body.longitude, req.body.latitude]
+        coordinates: coordinates
       },
       type: req.body.type,
       markerType: req.body.markerType,
@@ -22,6 +42,48 @@ router.post('/', async (req, res) => {
     res.status(201).json(savedMapPoint);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+// Get nearby places from Google Maps
+router.get('/google/nearby', async (req, res) => {
+  try {
+    const { latitude, longitude, radius, type } = req.query;
+    const places = await searchNearbyPlaces(
+      parseFloat(latitude),
+      parseFloat(longitude),
+      parseInt(radius),
+      type
+    );
+    res.json(places);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get place details from Google Maps
+router.get('/google/place/:placeId', async (req, res) => {
+  try {
+    const placeDetails = await getPlaceDetails(req.params.placeId);
+    res.json(placeDetails);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Calculate distance between two points
+router.get('/distance', async (req, res) => {
+  try {
+    const { originLat, originLng, destLat, destLng } = req.query;
+    const distance = await calculateDistance(
+      parseFloat(originLat),
+      parseFloat(originLng),
+      parseFloat(destLat),
+      parseFloat(destLng)
+    );
+    res.json(distance);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 

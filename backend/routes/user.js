@@ -1,8 +1,6 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
 const User = require('../models/User');
-const { auth, adminAuth } = require('../middleware/auth');
 
 // Register a new user
 router.post('/register', async (req, res) => {
@@ -27,15 +25,7 @@ router.post('/register', async (req, res) => {
     });
 
     await user.save();
-
-    // Create token
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.status(201).json({ user, token });
+    res.status(201).json({ user });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -62,47 +52,52 @@ router.post('/login', async (req, res) => {
     user.lastLogin = Date.now();
     await user.save();
 
-    // Create token
-    const token = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '24h' }
-    );
-
-    res.json({ user, token });
+    res.json({ user });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-// Get current user profile
-router.get('/profile', auth, async (req, res) => {
-  res.json(req.user);
+// Get user profile
+router.get('/profile/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Update user profile
-router.put('/profile', auth, async (req, res) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ['username', 'email', 'password'];
-  const isValidOperation = updates.every(update => allowedUpdates.includes(update));
-
-  if (!isValidOperation) {
-    return res.status(400).json({ message: 'Invalid updates' });
-  }
-
+router.put('/profile/:id', async (req, res) => {
   try {
-    updates.forEach(update => req.user[update] = req.body[update]);
-    await req.user.save();
-    res.json(req.user);
+    const updates = {};
+    const allowedUpdates = ['username', 'email', 'password'];
+    
+    Object.keys(req.body).forEach(key => {
+      if (allowedUpdates.includes(key)) {
+        updates[key] = req.body[key];
+      }
+    });
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    Object.keys(updates).forEach(update => user[update] = updates[update]);
+    await user.save();
+    res.json(user);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 });
 
-// Admin Routes
-
-// Get all users (admin only)
-router.get('/', adminAuth, async (req, res) => {
+// Get all users
+router.get('/', async (req, res) => {
   try {
     const users = await User.find({});
     res.json(users);
@@ -111,8 +106,8 @@ router.get('/', adminAuth, async (req, res) => {
   }
 });
 
-// Update user role (admin only)
-router.patch('/:id/role', adminAuth, async (req, res) => {
+// Update user role
+router.patch('/:id/role', async (req, res) => {
   try {
     const { role } = req.body;
     const user = await User.findById(req.params.id);
@@ -129,8 +124,8 @@ router.patch('/:id/role', adminAuth, async (req, res) => {
   }
 });
 
-// Deactivate user (admin only)
-router.patch('/:id/deactivate', adminAuth, async (req, res) => {
+// Deactivate user
+router.patch('/:id/deactivate', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
