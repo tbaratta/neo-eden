@@ -18,17 +18,19 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Import routes
-import geminiRoutes from './routes/gemini.js';
+// Routes
+import insight from './routes/insight.js';
+import gemini from './routes/gemini.js';
 import resources from './routes/resources.js';
 import users from './routes/user.js';
 import analyses from './routes/analysis.js';
 
 // API Routes
-app.use('/api/gemini', geminiRoutes);
+app.use('/api/gemini', gemini);
 app.use('/api/resources', resources);
 app.use('/api/users', users);
 app.use('/api/analysis', analyses);
+app.use('/api/insights', insight);
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -39,7 +41,9 @@ app.get('/', (req, res) => {
     endpoints: {
       resources: '/api/resources',
       users: '/api/users',
-      analysis: '/api/analysis'
+      analysis: '/api/analysis',
+      insights: '/api/insights',
+      gemini: '/api/gemini'
     }
   });
 });
@@ -51,7 +55,9 @@ app.use((req, res, next) => {
     availableEndpoints: {
       resources: '/api/resources',
       users: '/api/users',
-      analysis: '/api/analysis'
+      analysis: '/api/analysis',
+      insights: '/api/insights',
+      gemini: '/api/gemini'
     }
   });
 });
