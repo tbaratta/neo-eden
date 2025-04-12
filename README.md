@@ -26,6 +26,8 @@ NeoEden is a resource mapping system designed for post-apocalyptic scenarios, he
   - Reliability scoring
   - User contributions
   - Safety status updates
+  - User location tracking
+  - Nearby user discovery
 
 ## Tech Stack
 
@@ -59,7 +61,7 @@ npm install
 3. Create a `.env` file in the backend directory:
 ```env
 # Server Configuration
-PORT=3000
+PORT=5000
 
 # MongoDB Configuration
 MONGODB_URI=mongodb://localhost:27017/eden-finder
@@ -125,6 +127,46 @@ Body Parameters:
 ```http
 GET /api/analysis?type=PLANT
 ```
+
+### Users & Location
+
+#### Update User Location
+```http
+POST /api/users/:id/location
+```
+Body Parameters:
+- `longitude` (required): Current longitude
+- `latitude` (required): Current latitude
+
+#### Get User Location History
+```http
+GET /api/users/:id/location/history
+```
+Returns user's location history
+
+#### Update Base Location
+```http
+POST /api/users/:id/base-location
+```
+Body Parameters:
+- `longitude` (required): Base location longitude
+- `latitude` (required): Base location latitude
+
+#### Get Nearby Users
+```http
+GET /api/users/nearby
+```
+Query Parameters:
+- `longitude` (required): Center point longitude
+- `latitude` (required): Center point latitude
+- `radius` (optional): Search radius in meters (default: 5000)
+
+#### Update Search Radius
+```http
+POST /api/users/:id/search-radius
+```
+Body Parameters:
+- `radius` (required): Preferred search radius in meters (100-50000)
 
 ### Resource Types
 - `WATER`: Fresh water sources

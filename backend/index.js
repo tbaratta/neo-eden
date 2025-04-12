@@ -16,24 +16,55 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Routes
-const resourceRoutes = require('./routes/resources');
-const userRoutes = require('./routes/user');
-const analysisRoutes = require('./routes/analysis');
+// API Documentation
+app.get('/api/docs', (req, res) => {
+  res.redirect('https://github.com/yourusername/neo-eden#api-documentation');
+});
 
-app.use('/api/resources', resourceRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/analysis', analysisRoutes);
+// Import routes
+const resources = require('./routes/resources');
+const users = require('./routes/user');
+const analyses = require('./routes/analysis');
 
-// Test route
+// API Routes
+app.use('/api/resources', resources);
+app.use('/api/users', users);
+app.use('/api/analysis', analyses);
+
+// Welcome route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Neo-Eden backend!' });
+  res.json({
+    message: 'Welcome to Neo-Eden API',
+    version: '1.0.0',
+    documentation: '/api/docs',
+    endpoints: {
+      resources: '/api/resources',
+      users: '/api/users',
+      analysis: '/api/analysis'
+    }
+  });
+});
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({
+    message: 'Route not found',
+    availableEndpoints: {
+      resources: '/api/resources',
+      users: '/api/users',
+      analysis: '/api/analysis',
+      documentation: '/api/docs'
+    }
+  });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  res.status(err.status || 500).json({
+    message: err.message || 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err : {}
+  });
 });
 
 // Start server
