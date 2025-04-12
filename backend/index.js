@@ -1,7 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import connectDB from './config/db.js';
 
 // Load environment variables
 dotenv.config();
@@ -16,17 +18,14 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// API Documentation
-app.get('/api/docs', (req, res) => {
-  res.redirect('https://github.com/yourusername/neo-eden#api-documentation');
-});
-
 // Import routes
-const resources = require('./routes/resources');
-const users = require('./routes/user');
-const analyses = require('./routes/analysis');
+import geminiRoutes from './routes/gemini.js';
+import resources from './routes/resources.js';
+import users from './routes/user.js';
+import analyses from './routes/analysis.js';
 
 // API Routes
+app.use('/api/gemini', geminiRoutes);
 app.use('/api/resources', resources);
 app.use('/api/users', users);
 app.use('/api/analysis', analyses);
@@ -52,8 +51,7 @@ app.use((req, res, next) => {
     availableEndpoints: {
       resources: '/api/resources',
       users: '/api/users',
-      analysis: '/api/analysis',
-      documentation: '/api/docs'
+      analysis: '/api/analysis'
     }
   });
 });

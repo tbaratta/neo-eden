@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import * as analysis from '../controllers/analysis.js';
+
 const router = express.Router();
-const analysis = require('../controllers/analysis');
 
 // Create a new analysis
 router.post('/', analysis.createAnalysis);
@@ -20,4 +21,4 @@ router.put('/:id', analysis.updateAnalysis);
 // Delete an analysis
 router.delete('/:id', analysis.deleteAnalysis);
 
-module.exports = router; 
+export default router; 

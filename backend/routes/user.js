@@ -1,6 +1,7 @@
-const express = require('express');
+import express from 'express';
+import * as user from '../controllers/user.js';
+
 const router = express.Router();
-const user = require('../controllers/user');
 
 // Authentication routes
 router.post('/register', user.register);
@@ -22,4 +23,4 @@ router.post('/:id/base-location', user.updateBaseLocation);
 router.get('/nearby', user.getNearbyUsers);
 router.post('/:id/search-radius', user.updateSearchRadius);
 
-module.exports = router; 
+export default router; 

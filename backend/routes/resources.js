@@ -1,12 +1,8 @@
-const express = require('express');
+import express from 'express';
+import * as resource from '../controllers/resource.js';
+import { searchNearbyPlaces, getPlaceDetails, calculateDistance } from '../utils/googleMaps.js';
+
 const router = express.Router();
-const resource = require('../controllers/resource');
-const {
-  geocodeAddress,
-  getPlaceDetails,
-  searchNearbyPlaces,
-  calculateDistance
-} = require('../utils/googleMaps');
 
 // Get all resources with optional filtering
 router.get('/', resource.getAllResources);
@@ -73,4 +69,4 @@ router.get('/distance', async (req, res) => {
   }
 });
 
-module.exports = router; 
+export default router; 

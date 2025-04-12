@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const analysisSchema = new mongoose.Schema({
   type: {
@@ -102,4 +102,6 @@ analysisSchema.index({ type: 1 });
 // Index for related resources
 analysisSchema.index({ relatedResource: 1 });
 
-module.exports = mongoose.model('Analysis', analysisSchema); 
+const Analysis = mongoose.model('Analysis', analysisSchema);
+
+export default Analysis; 
