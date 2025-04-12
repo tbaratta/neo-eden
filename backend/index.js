@@ -1,7 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
-const connectDB = require('./config/db');
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import connectDB from './config/db.js';
 
 // Load environment variables
 dotenv.config();
@@ -17,25 +19,52 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const resourceRoutes = require('./routes/resources');
-const userRoutes = require('./routes/user');
-const analysisRoutes = require('./routes/analysis');
-const insightRoutes = require('./routes/insight');
+const insight = require('./routes/insight');
+import gemini from './routes/gemini.js';
+import resources from './routes/resources.js';
+import users from './routes/user.js';
+import analyses from './routes/analysis.js';
 
-app.use('/api/resources', resourceRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/analysis', analysisRoutes);
-app.use('/api/insights', insightRoutes);
+// API Routes
+app.use('/api/gemini', gemini);
+app.use('/api/resources', resources);
+app.use('/api/users', users);
+app.use('/api/analysis', analyses);
+app.use('/api/insights', insight);
 
-// Test route
+// Welcome route
 app.get('/', (req, res) => {
-  res.json({ message: 'Welcome to Neo-Eden backend!' });
+  res.json({
+    message: 'Welcome to Neo-Eden API',
+    version: '1.0.0',
+    documentation: '/api/docs',
+    endpoints: {
+      resources: '/api/resources',
+      users: '/api/users',
+      analysis: '/api/analysis'
+    }
+  });
+});
+
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({
+    message: 'Route not found',
+    availableEndpoints: {
+      resources: '/api/resources',
+      users: '/api/users',
+      analysis: '/api/analysis'
+    }
+  });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  res.status(err.status || 500).json({
+    message: err.message || 'Something went wrong!',
+    error: process.env.NODE_ENV === 'development' ? err : {}
+  });
 });
 
 // Start server
