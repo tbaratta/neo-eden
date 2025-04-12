@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const insightSchema = new mongoose.Schema({
   image: { type: String, required: true }, // URL or base64
@@ -7,4 +7,4 @@ const insightSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('Insight', insightSchema);
+export default mongoose.model('Insight', insightSchema);

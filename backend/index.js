@@ -19,7 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const insight = require('./routes/insight');
+import insight from './routes/insight.js';
 import gemini from './routes/gemini.js';
 import resources from './routes/resources.js';
 import users from './routes/user.js';
@@ -41,7 +41,9 @@ app.get('/', (req, res) => {
     endpoints: {
       resources: '/api/resources',
       users: '/api/users',
-      analysis: '/api/analysis'
+      analysis: '/api/analysis',
+      insights: '/api/insights',
+      gemini: '/api/gemini'
     }
   });
 });
@@ -53,7 +55,9 @@ app.use((req, res, next) => {
     availableEndpoints: {
       resources: '/api/resources',
       users: '/api/users',
-      analysis: '/api/analysis'
+      analysis: '/api/analysis',
+      insights: '/api/insights',
+      gemini: '/api/gemini'
     }
   });
 });
