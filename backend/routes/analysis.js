@@ -1,142 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const Analysis = require('../models/Analysis');
+const analysis = require('../controllers/analysis');
 
 // Create a new analysis
-router.post('/', async (req, res) => {
-  try {
-    const analysis = new Analysis({
-      type: req.body.type,
-      imageUrl: req.body.imageUrl,
-      location: {
-        type: 'Point',
-        coordinates: [req.body.longitude, req.body.latitude]
-      },
-      results: req.body.results,
-      aiResponse: req.body.aiResponse,
-      createdBy: req.body.userId,
-      relatedResource: req.body.resourceId
-    });
-
-    const savedAnalysis = await analysis.save();
-    res.status(201).json(savedAnalysis);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+router.post('/', analysis.createAnalysis);
 
 // Get all analyses with optional filtering
-router.get('/', async (req, res) => {
-  try {
-    const { type, resourceId } = req.query;
-    let query = {};
-
-    if (type) query.type = type.toUpperCase();
-    if (resourceId) query.relatedResource = resourceId;
-
-    const analyses = await Analysis.find(query)
-      .populate('createdBy', 'username')
-      .populate('relatedResource', 'name resourceType');
-    
-    res.json(analyses);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+router.get('/', analysis.getAllAnalyses);
 
 // Get analyses within a radius
-router.get('/nearby', async (req, res) => {
-  try {
-    const { longitude, latitude, radius = 5000, type } = req.query;
-    
-    let query = {
-      location: {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [parseFloat(longitude), parseFloat(latitude)]
-          },
-          $maxDistance: parseInt(radius)
-        }
-      }
-    };
-
-    if (type) {
-      query.type = type.toUpperCase();
-    }
-
-    const nearbyAnalyses = await Analysis.find(query)
-      .populate('createdBy', 'username')
-      .populate('relatedResource', 'name resourceType');
-    
-    res.json(nearbyAnalyses);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+router.get('/nearby', analysis.getNearbyAnalyses);
 
 // Get a single analysis
-router.get('/:id', async (req, res) => {
-  try {
-    const analysis = await Analysis.findById(req.params.id)
-      .populate('createdBy', 'username')
-      .populate('relatedResource', 'name resourceType');
-    
-    if (analysis) {
-      res.json(analysis);
-    } else {
-      res.status(404).json({ message: 'Analysis not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+router.get('/:id', analysis.getAnalysis);
 
 // Update an analysis
-router.put('/:id', async (req, res) => {
-  try {
-    const updates = {
-      type: req.body.type,
-      results: req.body.results,
-      aiResponse: req.body.aiResponse
-    };
-
-    if (req.body.longitude !== undefined && req.body.latitude !== undefined) {
-      updates.location = {
-        type: 'Point',
-        coordinates: [req.body.longitude, req.body.latitude]
-      };
-    }
-
-    const updatedAnalysis = await Analysis.findByIdAndUpdate(
-      req.params.id,
-      updates,
-      { new: true }
-    ).populate('createdBy', 'username')
-      .populate('relatedResource', 'name resourceType');
-
-    if (updatedAnalysis) {
-      res.json(updatedAnalysis);
-    } else {
-      res.status(404).json({ message: 'Analysis not found' });
-    }
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+router.put('/:id', analysis.updateAnalysis);
 
 // Delete an analysis
-router.delete('/:id', async (req, res) => {
-  try {
-    const deletedAnalysis = await Analysis.findByIdAndDelete(req.params.id);
-    if (deletedAnalysis) {
-      res.json({ message: 'Analysis deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Analysis not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+router.delete('/:id', analysis.deleteAnalysis);
 
 module.exports = router; 
