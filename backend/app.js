@@ -1,7 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const resourceRoutes = require('./routes/resources');
+
+// Import routes
+const resources = require('./routes/resources');
+const users = require('./routes/user');
+const analyses = require('./routes/analysis');
 
 const app = express();
 
@@ -9,8 +13,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use('/api/resources', resourceRoutes);
+// API Routes
+app.use('/api/resources', resources);
+app.use('/api/users', users);
+app.use('/api/analysis', analyses);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI, {

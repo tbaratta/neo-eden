@@ -21,15 +21,15 @@ app.get('/api/docs', (req, res) => {
   res.redirect('https://github.com/yourusername/neo-eden#api-documentation');
 });
 
-// Routes
-const resourceRoutes = require('./routes/resources');
-const userRoutes = require('./routes/user');
-const analysisRoutes = require('./routes/analysis');
+// Import routes
+const resources = require('./routes/resources');
+const users = require('./routes/user');
+const analyses = require('./routes/analysis');
 
 // API Routes
-app.use('/api/resources', resourceRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/analysis', analysisRoutes);
+app.use('/api/resources', resources);
+app.use('/api/users', users);
+app.use('/api/analysis', analyses);
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -70,5 +70,4 @@ app.use((err, req, res, next) => {
 // Start server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
-  console.log('API Documentation available at /api/docs');
 }); 
