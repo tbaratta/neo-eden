@@ -20,10 +20,12 @@ app.use(express.json());
 const resourceRoutes = require('./routes/resources');
 const userRoutes = require('./routes/user');
 const analysisRoutes = require('./routes/analysis');
+const insightRoutes = require('./routes/insight');
 
 app.use('/api/resources', resourceRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/analysis', analysisRoutes);
+app.use('/api/insights', insightRoutes);
 
 // Test route
 app.get('/', (req, res) => {
