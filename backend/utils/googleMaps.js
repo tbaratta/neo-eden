@@ -1,13 +1,13 @@
-const { Client } = require('@googlemaps/google-maps-services-js');
+import { Client } from '@googlemaps/google-maps-services-js';
 
 const client = new Client({});
 
 // Geocode an address to coordinates
-async function geocodeAddress(address) {
+export const geocodeAddress = async (address) => {
   try {
     const response = await client.geocode({
       params: {
-        address,
+        address: address,
         key: process.env.GOOGLE_MAPS_API
       }
     });
@@ -16,19 +16,18 @@ async function geocodeAddress(address) {
       const location = response.data.results[0].geometry.location;
       return {
         coordinates: [location.lng, location.lat],
-        formattedAddress: response.data.results[0].formatted_address,
-        placeId: response.data.results[0].place_id
+        formattedAddress: response.data.results[0].formatted_address
       };
     }
     return null;
   } catch (error) {
     console.error('Geocoding error:', error);
-    throw error;
+    return null;
   }
-}
+};
 
 // Get place details
-async function getPlaceDetails(placeId) {
+export const getPlaceDetails = async (placeId) => {
   try {
     const response = await client.placeDetails({
       params: {
@@ -39,51 +38,50 @@ async function getPlaceDetails(placeId) {
 
     return response.data.result;
   } catch (error) {
-    console.error('Place details error:', error);
-    throw error;
+    console.error('Place Details error:', error);
+    throw new Error('Failed to get place details');
   }
-}
+};
 
 // Search for nearby places
-async function searchNearbyPlaces(latitude, longitude, radius, type) {
+export const searchNearbyPlaces = async (latitude, longitude, radius, type) => {
   try {
     const response = await client.placesNearby({
       params: {
-        location: { lat: latitude, lng: longitude },
-        radius: radius || 1000, // Default 1km radius
-        type: type || undefined,
+        location: { lat: parseFloat(latitude), lng: parseFloat(longitude) },
+        radius: parseInt(radius),
+        type: type,
         key: process.env.GOOGLE_MAPS_API
       }
     });
 
     return response.data.results;
   } catch (error) {
-    console.error('Nearby search error:', error);
-    throw error;
+    console.error('Places Nearby search error:', error);
+    throw new Error('Failed to search nearby places');
   }
-}
+};
 
 // Calculate distance between two points
-async function calculateDistance(originLat, originLng, destLat, destLng) {
+export const calculateDistance = async (originLat, originLng, destLat, destLng) => {
   try {
     const response = await client.distancematrix({
       params: {
-        origins: [{ lat: originLat, lng: originLng }],
-        destinations: [{ lat: destLat, lng: destLng }],
+        origins: [{ lat: parseFloat(originLat), lng: parseFloat(originLng) }],
+        destinations: [{ lat: parseFloat(destLat), lng: parseFloat(destLng) }],
         key: process.env.GOOGLE_MAPS_API
       }
     });
 
-    return response.data.rows[0].elements[0];
+    if (response.data.rows[0].elements[0].status === 'OK') {
+      return {
+        distance: response.data.rows[0].elements[0].distance,
+        duration: response.data.rows[0].elements[0].duration
+      };
+    }
+    throw new Error('Could not calculate distance');
   } catch (error) {
-    console.error('Distance matrix error:', error);
-    throw error;
+    console.error('Distance Matrix error:', error);
+    throw new Error('Failed to calculate distance');
   }
-}
-
-module.exports = {
-  geocodeAddress,
-  getPlaceDetails,
-  searchNearbyPlaces,
-  calculateDistance
 }; 

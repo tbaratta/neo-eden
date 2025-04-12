@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const pointSchema = new mongoose.Schema({
   type: {
@@ -80,7 +80,9 @@ const resourceSchema = new mongoose.Schema({
   },
   reliability: {
     type: Number,
-    default: 0  // Calculated based on votes
+    default: 0,
+    min: 0,
+    max: 100
   },
   images: [{
     url: String,
@@ -147,7 +149,6 @@ resourceSchema.pre('save', function(next) {
   next();
 });
 
-
 // Index for resource type queries
 resourceSchema.index({ resourceType: 1 });
 // Index for reliability and status
@@ -155,4 +156,6 @@ resourceSchema.index({ reliability: -1, status: 1 });
 // Index for zone-based queries
 resourceSchema.index({ zone: 1 });
 
-module.exports = mongoose.model('Resource', resourceSchema); 
+const Resource = mongoose.model('Resource', resourceSchema);
+
+export default Resource; 

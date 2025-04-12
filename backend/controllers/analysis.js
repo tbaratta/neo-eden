@@ -1,7 +1,7 @@
-const Analysis = require('../models/Analysis');
+import Analysis from '../models/Analysis.js';
 
 // Create a new analysis
-exports.createAnalysis = async (req, res) => {
+export const createAnalysis = async (req, res) => {
   try {
     const analysis = new Analysis({
       type: req.body.type,
@@ -24,7 +24,7 @@ exports.createAnalysis = async (req, res) => {
 };
 
 // Get all analyses with optional filtering
-exports.getAllAnalyses = async (req, res) => {
+export const getAllAnalyses = async (req, res) => {
   try {
     const { type, resourceId } = req.query;
     let query = {};
@@ -43,7 +43,7 @@ exports.getAllAnalyses = async (req, res) => {
 };
 
 // Get analyses within a radius
-exports.getNearbyAnalyses = async (req, res) => {
+export const getNearbyAnalyses = async (req, res) => {
   try {
     const { longitude, latitude, radius = 5000, type } = req.query;
     
@@ -74,7 +74,7 @@ exports.getNearbyAnalyses = async (req, res) => {
 };
 
 // Get a single analysis
-exports.getAnalysis = async (req, res) => {
+export const getAnalysis = async (req, res) => {
   try {
     const analysis = await Analysis.findById(req.params.id)
       .populate('createdBy', 'username')
@@ -91,7 +91,7 @@ exports.getAnalysis = async (req, res) => {
 };
 
 // Update an analysis
-exports.updateAnalysis = async (req, res) => {
+export const updateAnalysis = async (req, res) => {
   try {
     const updates = {
       type: req.body.type,
@@ -124,7 +124,7 @@ exports.updateAnalysis = async (req, res) => {
 };
 
 // Delete an analysis
-exports.deleteAnalysis = async (req, res) => {
+export const deleteAnalysis = async (req, res) => {
   try {
     const deletedAnalysis = await Analysis.findByIdAndDelete(req.params.id);
     if (deletedAnalysis) {

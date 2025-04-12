@@ -1,8 +1,8 @@
-const Resource = require('../models/Resource');
-const { geocodeAddress } = require('../utils/googleMaps');
+import Resource from '../models/Resource.js';
+import { geocodeAddress } from '../utils/googleMaps.js';
 
 // Get all resources with optional filtering
-exports.getAllResources = async (req, res) => {
+export const getAllResources = async (req, res) => {
   try {
     const { type, status, reliability } = req.query;
     let query = {};
@@ -20,7 +20,7 @@ exports.getAllResources = async (req, res) => {
 };
 
 // Get resources within radius
-exports.getNearbyResources = async (req, res) => {
+export const getNearbyResources = async (req, res) => {
   try {
     const { longitude, latitude, radius = 5000, type } = req.query;
     
@@ -48,7 +48,7 @@ exports.getNearbyResources = async (req, res) => {
 };
 
 // Create a new resource
-exports.createResource = async (req, res) => {
+export const createResource = async (req, res) => {
   try {
     let coordinates;
     
@@ -89,7 +89,7 @@ exports.createResource = async (req, res) => {
 };
 
 // Vote on a resource
-exports.voteOnResource = async (req, res) => {
+export const voteOnResource = async (req, res) => {
   try {
     const { voteType } = req.body;
     const resource = await Resource.findById(req.params.id);
@@ -113,7 +113,7 @@ exports.voteOnResource = async (req, res) => {
 };
 
 // Update resource status
-exports.updateStatus = async (req, res) => {
+export const updateStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const resource = await Resource.findById(req.params.id);
@@ -131,7 +131,7 @@ exports.updateStatus = async (req, res) => {
 };
 
 // Verify a resource
-exports.verifyResource = async (req, res) => {
+export const verifyResource = async (req, res) => {
   try {
     const resource = await Resource.findById(req.params.id);
     
@@ -156,7 +156,7 @@ exports.verifyResource = async (req, res) => {
 };
 
 // Get resource by ID
-exports.getResource = async (req, res) => {
+export const getResource = async (req, res) => {
   try {
     const resource = await Resource.findById(req.params.id);
     if (resource) {
@@ -170,7 +170,7 @@ exports.getResource = async (req, res) => {
 };
 
 // Update a resource
-exports.updateResource = async (req, res) => {
+export const updateResource = async (req, res) => {
   try {
     const updates = {
       name: req.body.name,
@@ -208,7 +208,7 @@ exports.updateResource = async (req, res) => {
 };
 
 // Get resources within a bounding box
-exports.getResourcesInBounds = async (req, res) => {
+export const getResourcesInBounds = async (req, res) => {
   try {
     const { swLng, swLat, neLng, neLat, resourceType, zone, markerType } = req.query;
 
@@ -235,7 +235,7 @@ exports.getResourcesInBounds = async (req, res) => {
 };
 
 // Delete a resource
-exports.deleteResource = async (req, res) => {
+export const deleteResource = async (req, res) => {
   try {
     const deletedResource = await Resource.findByIdAndDelete(req.params.id);
     if (deletedResource) {

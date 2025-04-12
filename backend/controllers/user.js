@@ -1,7 +1,7 @@
-const User = require('../models/User');
+import User from '../models/User.js';
 
 // Register a new user
-exports.register = async (req, res) => {
+export const register = async (req, res) => {
   try {
     const { username, email, password, firstName, lastName } = req.body;
 
@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
 };
 
 // Login user
-exports.login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -59,7 +59,7 @@ exports.login = async (req, res) => {
 };
 
 // Get user profile
-exports.getProfile = async (req, res) => {
+export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -72,7 +72,7 @@ exports.getProfile = async (req, res) => {
 };
 
 // Update user profile
-exports.updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
   try {
     const updates = {};
     const allowedUpdates = ['username', 'email', 'password', 'firstName', 'lastName'];
@@ -97,7 +97,7 @@ exports.updateProfile = async (req, res) => {
 };
 
 // Get all users
-exports.getAllUsers = async (req, res) => {
+export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({});
     res.json(users);
@@ -107,7 +107,7 @@ exports.getAllUsers = async (req, res) => {
 };
 
 // Update user role
-exports.updateRole = async (req, res) => {
+export const updateRole = async (req, res) => {
   try {
     const { role } = req.body;
     const user = await User.findById(req.params.id);
@@ -125,7 +125,7 @@ exports.updateRole = async (req, res) => {
 };
 
 // Deactivate user
-exports.deactivateUser = async (req, res) => {
+export const deactivateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
@@ -142,7 +142,7 @@ exports.deactivateUser = async (req, res) => {
 };
 
 // Update user location
-exports.updateLocation = async (req, res) => {
+export const updateLocation = async (req, res) => {
   try {
     const { longitude, latitude } = req.body;
     const user = await User.findById(req.params.id);
@@ -159,7 +159,7 @@ exports.updateLocation = async (req, res) => {
 };
 
 // Get user location history
-exports.getLocationHistory = async (req, res) => {
+export const getLocationHistory = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     
@@ -174,7 +174,7 @@ exports.getLocationHistory = async (req, res) => {
 };
 
 // Update base location
-exports.updateBaseLocation = async (req, res) => {
+export const updateBaseLocation = async (req, res) => {
   try {
     const { longitude, latitude } = req.body;
     const user = await User.findById(req.params.id);
@@ -196,7 +196,7 @@ exports.updateBaseLocation = async (req, res) => {
 };
 
 // Get nearby users
-exports.getNearbyUsers = async (req, res) => {
+export const getNearbyUsers = async (req, res) => {
   try {
     const { longitude, latitude, radius } = req.query;
     const nearbyUsers = await User.getNearbyUsers(
@@ -211,7 +211,7 @@ exports.getNearbyUsers = async (req, res) => {
 };
 
 // Update search radius
-exports.updateSearchRadius = async (req, res) => {
+export const updateSearchRadius = async (req, res) => {
   try {
     const { radius } = req.body;
     const user = await User.findById(req.params.id);
