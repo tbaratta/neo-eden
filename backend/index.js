@@ -33,19 +33,19 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Routes
-import insightRoutes from './routes/insight.js';
-import geminiRoutes from './routes/gemini.js';
-import resourceRoutes from './routes/resources.js';
-import userRoutes from './routes/user.js';
-import analysisRoutes from './routes/analysis.js';
+// Import routes
+import insight from './routes/insight.js';
+import gemini from './routes/gemini.js';
+import resources from './routes/resources.js';
+import users from './routes/user.js';
+import analyses from './routes/analysis.js';
 
 // API Routes
-app.use('/api/gemini', geminiRoutes);
-app.use('/api/resources', resourceRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/analysis', analysisRoutes);
-app.use('/api/insights', insightRoutes);
+app.use('/api/insights', insight);
+app.use('/api/gemini', gemini);
+app.use('/api/resources', resources);
+app.use('/api/users', users);
+app.use('/api/analysis', analyses);
 
 // Welcome route
 app.get('/', (req, res) => {
