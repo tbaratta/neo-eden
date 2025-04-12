@@ -17,8 +17,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const exampleRoutes = require('./routes/example');
-app.use('/api/examples', exampleRoutes);
+const mapRoutes = require('./routes/map');
+app.use('/api/maps', mapRoutes);
 
 // Test route
 app.get('/', (req, res) => {
