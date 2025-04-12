@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+const geminiRoutes = require('./routes/gemini');
+
 
 // Load environment variables
 dotenv.config();
@@ -19,6 +21,7 @@ app.use(express.json());
 // Routes
 const mapRoutes = require('./routes/map');
 app.use('/api/maps', mapRoutes);
+app.use('/api/gemini', geminiRoutes);
 
 // Test route
 app.get('/', (req, res) => {
