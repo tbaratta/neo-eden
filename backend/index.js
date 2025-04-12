@@ -16,17 +16,16 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// API Documentation
-app.get('/api/docs', (req, res) => {
-  res.redirect('https://github.com/yourusername/neo-eden#api-documentation');
-});
 
-// Import routes
+// Routes
+const geminiRoutes = require('./routes/gemini');
 const resources = require('./routes/resources');
 const users = require('./routes/user');
 const analyses = require('./routes/analysis');
 
 // API Routes
+
+app.use('/api/gemini', geminiRoutes);
 app.use('/api/resources', resources);
 app.use('/api/users', users);
 app.use('/api/analysis', analyses);
@@ -52,8 +51,7 @@ app.use((req, res, next) => {
     availableEndpoints: {
       resources: '/api/resources',
       users: '/api/users',
-      analysis: '/api/analysis',
-      documentation: '/api/docs'
+      analysis: '/api/analysis'
     }
   });
 });
