@@ -1,6 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { View, Text, Image } from 'react-native';
 
 // Import screens
 import ChatScreen from '../screens/ChatScreen';
@@ -8,73 +9,104 @@ import HomeScreen from '../screens/HomeScreen';
 import MapScreen from '../screens/MapScreen';
 import NewsScreen from '../screens/NewsScreen';
 import CameraScreen from '../screens/CameraScreen';
-// import SettingsScreen from '../screens/SettingsScreen';
+import SettingsScreen from '../screens/SettingScreen';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  const tabBarStyle = {
+    position: 'absolute',
+    bottom: 20,
+    left: 120,
+    right: 120,
+    elevation: 5,
+    backgroundColor: '#ffffff',
+    borderRadius: 25,
+    height: 75,
+  };
+
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarActiveTintColor: '#2196F3',
         tabBarInactiveTintColor: 'gray',
         headerShown: true,
+        tabBarStyle: tabBarStyle,
+        tabBarShowLabel: false,
+        tabBarHideOnKeyboard: true,
       }}
     >
-      <Tab.Screen
-        name="Messages"
-        component={ChatScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="chat" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Dashboard"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="home" color={color} size={size} />
-          ),
-        }}
-      />
       <Tab.Screen
         name="Location"
         component={MapScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="map" color={color} size={size} />
+            // Location Icon - Replace with your image
+
+            <Image
+              source={require('../../assets/pictures/navbar/7.png')}
+              style={{ width: 35, height: 35, tintColor: color }}
+              onError={() => console.error("Failed to load location icon")}
+            />
           ),
         }}
-      />  
+      />
       <Tab.Screen
-        name="Updates"
+        name="News"
         component={NewsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="newspaper" color={color} size={size} />
+            // News Icon - Replace with your image
+            <Image
+              source={require('../../assets/pictures/navbar/6.png')}
+              style={{ width: 35, height: 35, tintColor: color }}
+              onError={() => console.error("Failed to load location icon")}
+            />
           ),
         }}
       />
       <Tab.Screen
-        name="Capture"
+        name="Camera"
         component={CameraScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="camera" color={color} size={size} />
+            // Camera Icon - Replace with your image
+            <Image
+              source={require('../../assets/pictures/navbar/4.png')}
+              style={{ width: 35, height: 35, tintColor: color }}
+              onError={() => console.error("Failed to load location icon")}
+            />
           ),
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            // Chat Icon - Replace with your image
+            <Image
+              source={require('../../assets/pictures/navbar/3.png')}
+              style={{ width: 35, height: 35, tintColor: color }}
+              onError={() => console.error("Failed to load location icon")}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="cog" color={color} size={size} />
+            // Settings Icon - Replace with your image
+            <Image
+              source={require('../../assets/pictures/navbar/2.png')}
+              style={{ width: 35, height: 35, tintColor: color }}
+              onError={() => console.error("Failed to load location icon")}
+            />
           ),
         }}
-      /> */}
+      />
     </Tab.Navigator>
   );
 };
