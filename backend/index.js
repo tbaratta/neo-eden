@@ -40,6 +40,7 @@ import resources from './routes/resources.js';
 import users from './routes/user.js';
 import analyses from './routes/analysis.js';
 import auth from './routes/auth.js';
+import news from './routes/news.js';
 
 // API Routes
 app.use('/api/auth', auth);
@@ -48,6 +49,7 @@ app.use('/api/gemini', gemini);
 app.use('/api/resources', resources);
 app.use('/api/users', users);
 app.use('/api/analysis', analyses);
+app.use('/api/news', news);
 
 // Welcome route
 app.get('/', (req, res) => {
@@ -61,7 +63,8 @@ app.get('/', (req, res) => {
       users: '/api/users',
       analysis: '/api/analysis',
       insights: '/api/insights',
-      gemini: '/api/gemini'
+      gemini: '/api/gemini',
+      news: '/api/news'
     }
   });
 });
@@ -76,7 +79,8 @@ app.use((req, res) => {
       users: '/api/users',
       analysis: '/api/analysis',
       insights: '/api/insights',
-      gemini: '/api/gemini'
+      gemini: '/api/gemini',
+      news: '/api/news'
     }
   });
 });
