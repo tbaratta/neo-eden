@@ -1,10 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { View, StyleSheet, Image, TextInput, ScrollView, Text, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { API_URL } from '../config/api';
 import * as Location from 'expo-location';
 
-export default function NewsScreen() {
+export default function NewsScreen({ navigation }) {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
   const [searchText, setSearchText] = useState('');
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -232,7 +237,7 @@ const styles = StyleSheet.create({
     height: 37,
     resizeMode: 'contain',
     alignSelf: 'center',
-    marginTop: 60,
+    marginTop: 100,
     marginBottom: 20,
   },
   headerRow: {
