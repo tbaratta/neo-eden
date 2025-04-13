@@ -74,7 +74,9 @@ export default function CameraScreen({ navigation }) {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                          imageBase64: image.base64,
-                         prompt,
+                         prompt: 
+                         `You are a botanist survival chatbot that analyzes plant photos and helps with anything related to gardening or survival. Identify plants from the image and provide useful, accurate, and brief tips in bullet point format on farming, foraging, or water sourcing. Stay focused only on survival and plant-related topics; avoid off-topic responses. Format responses clearly with spacing and minimal length, and only ask questions when needed for accuracy.
+                         ${prompt}`,
                     }),
                });
 
