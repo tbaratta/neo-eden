@@ -1,81 +1,53 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
+import styles from '../styles/styles';
+import NavBar from '../navigation/TabNavigator';
 
-export default function ChatBox() {
+export default function ChatScreen({ navigation }) {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+
+  const sendMessage = () => {
+    if (input.trim() === '') return;
+    setMessages([...messages, { id: Date.now().toString(), text: input }]);
+    setInput('');
+  };
+
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.backArrow}>←</Text>
-        <Text style={styles.title}>BOB THE GUIDE</Text>
-        <Text style={styles.icon}>📝</Text>
-      </View>
+    <KeyboardAvoidingView
+      style={styles.chatContainer}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={80}
+    >
+      <FlatList
+        data={messages}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <View style={styles.messageBubble}>
+            <Text>{item.text}</Text>
+          </View>
+        )}
+        contentContainerStyle={{ paddingBottom: 20 }}
+      />
 
-      {/* Chat Area */}
-      <View style={styles.chatArea}></View>
-
-      {/* Input Area */}
-      <View style={styles.inputArea}>
+      {/* Input */}
+      <View style={styles.inputContainer}>
         <TextInput
-          placeholder="What would you want to ask?"
-          placeholderTextColor="#A5A5A5"
-          style={styles.input}
+          value={input}
+          onChangeText={setInput}
+          style={styles.textInput}
+          placeholder="Type here..."
+          placeholderTextColor="#999"
         />
-        <TouchableOpacity>
-          <Text style={styles.sendIcon}>➤</Text>
+        <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
+          <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
       </View>
-    </View>
+
+      {/* NavBar higher */}
+      <View style={{ marginTop: 20 }}>
+        <NavBar onChatPress={() => navigation.navigate('Chat')} />
+      </View>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  backArrow: {
-    color: '#fff',
-    fontSize: 24,
-  },
-  title: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-  },
-  icon: {
-    color: '#fff',
-    fontSize: 22,
-  },
-  chatArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 30,
-    borderWidth: 2,
-    borderColor: '#9C5DFF',
-    marginBottom: 20,
-  },
-  inputArea: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 30,
-    paddingHorizontal: 20,
-    height: 50,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: '#000',
-  },
-  sendIcon: {
-    fontSize: 20,
-    color: '#9C5DFF',
-  },
-});
