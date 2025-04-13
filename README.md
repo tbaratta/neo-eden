@@ -1,197 +1,160 @@
-# NeoEden: Post-Apocalyptic Resource Mapping System
+# Neo-Eden
 
-NeoEden is a resource mapping system designed for post-apocalyptic scenarios, helping communities track and analyze vital resources like water sources, farmland, safe shelters, and more. The system includes AI-powered analysis of environmental elements and community-driven resource verification.
+A comprehensive resource mapping and community engagement platform that combines AI-powered analysis, location-based services, and real-time updates.
 
 ## Features
 
-- **Resource Tracking**
-  - Water sources
-  - Arable land
-  - Safe shelters
-  - Medical supplies
-  - Food sources
-  - Danger zones
-  - Radiation areas
+- **Resource Mapping**
+  - Interactive map interface for resource visualization
+  - Location-based resource discovery
+  - Real-time resource status updates
+  - Resource categorization and filtering
 
-- **AI-Powered Analysis**
-  - Plant identification
-  - Soil quality assessment
-  - Water safety analysis
-  - Insect identification
-  - Animal track analysis
-  - Campsite evaluation
+- **AI Integration**
+  - Image analysis using Google's Gemini AI
+  - Resource classification and recommendations
+  - Intelligent insights generation
+  - Visual data processing
 
-- **Community Features**
-  - Resource verification system
-  - Reliability scoring
-  - User contributions
-  - Safety status updates
-  - User location tracking
-  - Nearby user discovery
+- **Location Services**
+  - Real-time location tracking
+  - Nearby resource discovery
+  - Base location management
+  - Customizable search radius
+
+- **News & Updates**
+  - Location-based news feed
+  - Community updates and announcements
+  - Real-time notifications
+  - News categorization
+
+- **Camera & Media**
+  - In-app photo capture
+  - Image gallery integration
+  - Location tagging for media
+  - AI-powered image analysis
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register a new user
+- `POST /api/auth/login` - User login
+- `GET /api/auth/verify` - Verify authentication token
+
+### Resources
+- `GET /api/resources` - Get all resources
+- `POST /api/resources` - Create a new resource
+- `GET /api/resources/:id` - Get resource details
+- `PUT /api/resources/:id` - Update resource
+- `DELETE /api/resources/:id` - Delete resource
+- `GET /api/resources/nearby` - Get nearby resources
+
+### Users
+- `GET /api/users/profile` - Get user profile
+- `PUT /api/users/profile` - Update user profile
+- `POST /api/users/:id/location` - Update user location
+- `GET /api/users/:id/location/history` - Get location history
+- `POST /api/users/:id/base-location` - Set base location
+- `POST /api/users/:id/search-radius` - Update search radius
+
+### Analysis
+- `GET /api/analysis/resources` - Get resource analysis
+- `GET /api/analysis/trends` - Get trend analysis
+- `POST /api/analysis/report` - Generate custom report
+
+### News
+- `GET /api/news` - Get all news articles
+- `POST /api/news` - Create news article
+- `GET /api/news/:id` - Get specific article
+- `PUT /api/news/:id` - Update article
+- `DELETE /api/news/:id` - Delete article
+- `GET /api/news/nearby` - Get nearby news
+
+### Camera & Media
+- `POST /api/camera/upload` - Upload media with location
+- `GET /api/camera/nearby` - Get nearby media
+
+### AI Services
+- `POST /api/gemini` - Process image with Gemini AI
+
+## Getting Started
+
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB
+- Expo CLI (for mobile app)
+- Google Cloud account (for Gemini AI)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/neo-eden.git
+   ```
+
+2. Install backend dependencies:
+   ```bash
+   cd backend
+   npm install
+   ```
+
+3. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+4. Set up environment variables:
+   ```bash
+   # Backend .env
+   MONGODB_URI=your_mongodb_uri
+   JWT_SECRET=your_jwt_secret
+   GEMINI_API_KEY=your_gemini_api_key
+   PORT=5000
+
+   # Frontend .env
+   API_URL=http://localhost:5000
+   ```
+
+### Running the Application
+
+1. Start the backend server:
+   ```bash
+   cd backend
+   npm start
+   ```
+
+2. Start the frontend application:
+   ```bash
+   cd frontend
+   npx expo start
+   ```
+
+## Mobile App Features
+
+- Interactive map interface
+- Real-time location tracking
+- Camera integration with AI analysis
+- Resource management
+- News feed
+- User profile management
+- Location-based services
 
 ## Tech Stack
 
 - **Backend**
-  - Node.js
-  - Express.js
-  - MongoDB
-  - Mongoose
-  - Google Maps API
+  - Node.js & Express
+  - MongoDB & Mongoose
+  - JWT Authentication
+  - Google Gemini AI
 
-## Prerequisites
-
-- Node.js (v14 or higher)
-- MongoDB (v4.4 or higher)
-- Google Maps API key
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/neo-eden.git
-cd neo-eden
-```
-
-2. Install dependencies:
-```bash
-cd backend
-npm install
-```
-
-3. Create a `.env` file in the backend directory:
-```env
-# Server Configuration
-PORT=5000
-
-# MongoDB Configuration
-MONGODB_URI=mongodb://localhost:27017/eden-finder
-
-# Optional: Set NODE_ENV
-NODE_ENV=development
-
-# Google Maps API Key
-GOOGLE_MAPS_API=your_google_maps_api_key
-```
-
-4. Start the server:
-```bash
-npm start
-```
-
-## API Documentation
-
-### Resources
-
-#### Get All Resources
-```http
-GET /api/resources
-```
-Query Parameters:
-- `type` (optional): Filter by resource type
-- `status` (optional): Filter by status
-- `reliability` (optional): Filter by minimum reliability score
-
-#### Get Nearby Resources
-```http
-GET /api/resources/nearby
-```
-Query Parameters:
-- `longitude` (required): Center point longitude
-- `latitude` (required): Center point latitude
-- `radius` (optional): Search radius in meters (default: 5000)
-
-#### Create Resource
-```http
-POST /api/resources
-```
-Body Parameters:
-- `name` (required): Resource name
-- `description`: Resource description
-- `longitude` & `latitude`: Coordinates
-- `resourceType` (required): Type of resource
-- `status`: Resource status
-
-### Analysis
-
-#### Create Analysis
-```http
-POST /api/analysis
-```
-Body Parameters:
-- `type` (required): Analysis type (PLANT, SOIL, etc.)
-- `imageUrl` (required): URL of the analyzed image
-- `longitude` & `latitude`: Location coordinates
-- `results`: Analysis results
-
-#### Get Analyses by Type
-```http
-GET /api/analysis?type=PLANT
-```
-
-### Users & Location
-
-#### Update User Location
-```http
-POST /api/users/:id/location
-```
-Body Parameters:
-- `longitude` (required): Current longitude
-- `latitude` (required): Current latitude
-
-#### Get User Location History
-```http
-GET /api/users/:id/location/history
-```
-Returns user's location history
-
-#### Update Base Location
-```http
-POST /api/users/:id/base-location
-```
-Body Parameters:
-- `longitude` (required): Base location longitude
-- `latitude` (required): Base location latitude
-
-#### Get Nearby Users
-```http
-GET /api/users/nearby
-```
-Query Parameters:
-- `longitude` (required): Center point longitude
-- `latitude` (required): Center point latitude
-- `radius` (optional): Search radius in meters (default: 5000)
-
-#### Update Search Radius
-```http
-POST /api/users/:id/search-radius
-```
-Body Parameters:
-- `radius` (required): Preferred search radius in meters (100-50000)
-
-### Resource Types
-- `WATER`: Fresh water sources
-- `FARMLAND`: Arable land
-- `SHELTER`: Safe shelter locations
-- `MEDICAL`: Medical supplies/facilities
-- `FOOD`: Food sources
-- `DANGER`: Dangerous areas
-- `RADIATION`: Radiation zones
-- `POI`: Point of Interest
-- `LANDMARK`: Notable landmarks
-
-### Analysis Types
-- `PLANT`: Plant identification and analysis
-- `SOIL`: Soil quality assessment
-- `WATER`: Water safety analysis
-- `INSECT`: Insect identification
-- `TRACKS`: Animal track analysis
-- `CAMPSITE`: Campsite safety evaluation
-
-### Status Types
-- `ACTIVE`: Verified and available
-- `UNVERIFIED`: Newly reported
-- `DEPLETED`: No longer available
-- `DANGEROUS`: Unsafe to access
+- **Frontend**
+  - React Native
+  - Expo
+  - React Navigation
+  - React Native Maps
+  - Expo Camera
+  - Axios
 
 ## Contributing
 
