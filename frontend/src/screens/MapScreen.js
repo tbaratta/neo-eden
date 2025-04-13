@@ -1,38 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Image, TextInput, Text, StyleSheet, Dimensions } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
-import * as Location from 'expo-location';
-import NavBar from '../navigation/TabNavigator';
+import React, { useState } from 'react';
+import { View, StyleSheet, Image, TextInput } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
-export default function MapScreen({ navigation }) {
+export default function MapScreen() {
      const [searchText, setSearchText] = useState('');
-     const [location, setLocation] = useState(null);
-     const [errorMsg, setErrorMsg] = useState(null);
-
-     useEffect(() => {
-          (async () => {
-               let { status } = await Location.requestForegroundPermissionsAsync();
-               if (status !== 'granted') {
-                    setErrorMsg('Permission to access location was denied');
-                    return;
-               }
-
-               let location = await Location.getCurrentPositionAsync({});
-               setLocation(location);
-          })();
-     }, []);
-
-     const initialRegion = location ? {
-          latitude: location.coords.latitude,
-          longitude: location.coords.longitude,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-     } : {
-          latitude: 26.4739,  // FGCU's coordinates as default
-          longitude: -81.7748,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-     };
 
      return (
           <View style={styles.container}>
@@ -46,37 +17,35 @@ export default function MapScreen({ navigation }) {
                <TextInput
                     value={searchText}
                     onChangeText={setSearchText}
-                    placeholder="Search for something..."
+                    placeholder="Search locations..."
                     placeholderTextColor="#999"
                     style={styles.searchInput}
                />
 
-               {/* Map */}
-               <View style={styles.mapContainer}>
+               {/* Map content */}
+               <View style={styles.content}>
                     <MapView
                          style={styles.map}
-                         initialRegion={initialRegion}
-                         showsUserLocation={true}
-                         showsMyLocationButton={true}
-                         showsCompass={true}
+                         initialRegion={{
+                              latitude: 26.4739,
+                              longitude: -81.7748,
+                              latitudeDelta: 0.0922,
+                              longitudeDelta: 0.0421,
+                         }}
                     >
                          <Marker
-                              coordinate={initialRegion}
-                              title="Current Location"
+                              coordinate={{
+                                   latitude: 26.4739,
+                                   longitude: -81.7748,
+                              }}
                          >
-                              <View style={styles.markerContainer}>
-                                   <Image
-                                        source={require('../../assets/pictures/navbar/4.png')}
-                                        style={styles.markerImage}
-                                   />
-                                   <Text style={styles.markerText}>You are here</Text>
-                              </View>
+                              <Image
+                                   source={require('../../assets/pictures/navbar/4.png')}
+                                   style={styles.markerImage}
+                              />
                          </Marker>
                     </MapView>
                </View>
-
-               {/* NavBar pinned to bottom */}
-               <NavBar onChatPress={() => navigation.navigate('Chat')} />
           </View>
      );
 }
@@ -103,32 +72,20 @@ const styles = StyleSheet.create({
           marginBottom: 20,
           fontSize: 16,
      },
-     mapContainer: {
+     content: {
           flex: 1,
-          overflow: 'hidden',
+          backgroundColor: '#fff',
           borderTopLeftRadius: 30,
           borderTopRightRadius: 30,
+          overflow: 'hidden',
      },
      map: {
-          width: Dimensions.get('window').width,
+          width: '100%',
           height: '100%',
-     },
-     markerContainer: {
-          alignItems: 'center',
-          padding: 5,
      },
      markerImage: {
           width: 30,
           height: 30,
           resizeMode: 'contain',
-          marginBottom: 5,
      },
-     markerText: {
-          color: '#4A4522',
-          fontSize: 12,
-          fontWeight: 'bold',
-          backgroundColor: 'white',
-          padding: 2,
-          borderRadius: 4,
-     }
 });

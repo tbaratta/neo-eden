@@ -22,7 +22,7 @@ const TabNavigator = () => {
       }}
     >
       <Tab.Screen
-        name="Chat"
+        name="Messages"
         component={ChatScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -31,7 +31,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Home"
+        name="Dashboard"
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -40,7 +40,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Map"
+        name="Location"
         component={MapScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -49,7 +49,7 @@ const TabNavigator = () => {
         }}
       />  
       <Tab.Screen
-        name="News"
+        name="Updates"
         component={NewsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -57,10 +57,8 @@ const TabNavigator = () => {
           ),
         }}
       />
-      
-      
       <Tab.Screen
-        name="Camera"
+        name="Capture"
         component={CameraScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
