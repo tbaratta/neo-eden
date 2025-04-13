@@ -55,30 +55,40 @@ export default function CameraScreen() {
                return;
           }
 
-          setLoading(true);
+          // Reset AI response and set loading state before making the request
           setAIResponse('');
+          setLoading(true);
+
           console.log("Sending base64 length:", image.base64?.length);
           console.log("Prompt:", prompt);
 
-          const response = await fetch('http://10.245.6.249:3000/api/gemini/analyze', {
-               method: 'POST',
-               headers: { 'Content-Type': 'application/json' },
-               body: JSON.stringify({
-                    imageBase64: image.base64,
-                    prompt,
-               }),
-          });
+          try {
+               // Make API request
+               const response = await fetch('http://10.245.6.249:3000/api/gemini/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                         imageBase64: image.base64,
+                         prompt,
+                    }),
+               });
 
-          const data = await response.json();
-          console.log("API response:", data);
+               const data = await response.json();
+               console.log("API response:", data);
 
-          if (response.ok) {
-               setAIResponse(data.reply);
-          } else {
-               Alert.alert('Error', data.error || 'AI analysis failed.');
+               if (response.ok) {
+                    setAIResponse(data.reply);
+               } else {
+                    Alert.alert('Error', data.error || 'AI analysis failed.');
+               }
+          } catch (error) {
+               Alert.alert('Error', 'An error occurred while sending the request.');
+          } finally {
+               // Ensure loading state is set to false once request is complete
+               setLoading(false);
           }
-
      };
+
 
      // 👇 THIS is your return (inside the function!)
      return (
