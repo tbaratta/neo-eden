@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
      View,
      Text,
@@ -15,7 +15,12 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-export default function CameraScreen() {
+export default function CameraScreen({ navigation }) {
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
      const [image, setImage] = useState(null);
      const [prompt, setPrompt] = useState('');
      const [loading, setLoading] = useState(false);
@@ -110,7 +115,7 @@ export default function CameraScreen() {
                          <Image
                               source={require('../../assets/images/logo-white.png')}
                               resizeMode="contain"
-                              style={{ width: '80%', height: 80, marginBottom: 32 }}
+                              style={{ width: '80%', height: 150, marginBottom: 32 }}
                          />
 
                          {!image ? (
