@@ -5,7 +5,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 // Import screens
 import ChatScreen from '../screens/ChatScreen';
 import HomeScreen from '../screens/HomeScreen';
-// import MapScreen from '../screens/MapScreen';
+import MapScreen from '../screens/MapScreen';
 import NewsScreen from '../screens/NewsScreen';
 // import CameraScreen from '../screens/CameraScreen';
 // import SettingsScreen from '../screens/SettingsScreen';
@@ -39,7 +39,7 @@ const TabNavigator = () => {
           ),
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Map"
         component={MapScreen}
         options={{
@@ -47,7 +47,7 @@ const TabNavigator = () => {
             <MaterialCommunityIcons name="map" color={color} size={size} />
           ),
         }}
-      />   */}
+      />  
       <Tab.Screen
         name="News"
         component={NewsScreen}
