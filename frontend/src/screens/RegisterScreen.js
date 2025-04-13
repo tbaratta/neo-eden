@@ -5,29 +5,25 @@ import {
      TextInput,
      TouchableOpacity,
      StyleSheet,
-     Image,
 } from 'react-native';
 
-export default function LoginScreen({ navigation }) {
+export default function RegisterScreen({ navigation }) {
      const [email, setEmail] = useState('');
      const [password, setPassword] = useState('');
 
-     const handleLogin = () => {
+     const handleRegister = () => {
           if (email && password) {
-               console.log('Login:', email);
-               navigation.replace('Tabs');
+               console.log('Registered:', email);
+               navigation.replace('Tabs'); // Later: validate & route securely
           } else {
-               alert('Enter email and password');
+               alert('Please fill in all fields');
           }
      };
 
      return (
           <View style={styles.container}>
-               <Image
-                    source={require('../../assets/images/logo-white2.png')}
-                    style={styles.logo}
-                    resizeMode="contain"
-               />
+               <Text style={styles.heading}>Create an Account</Text>
+
                <TextInput
                     placeholder="Email"
                     placeholderTextColor="#aaa"
@@ -45,17 +41,13 @@ export default function LoginScreen({ navigation }) {
                     onChangeText={setPassword}
                />
 
-               <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                    <Text style={styles.buttonText}>Continue</Text>
+               <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                    <Text style={styles.buttonText}>Register</Text>
                </TouchableOpacity>
 
-               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-                    <Text style={styles.signUp}>
-                         Don’t have an account? <Text style={styles.link}>Sign up</Text>
-                    </Text>
+               <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Text style={styles.backToLogin}>← Back to Login</Text>
                </TouchableOpacity>
-
-
           </View>
      );
 }
@@ -68,12 +60,11 @@ const styles = StyleSheet.create({
           alignItems: 'center',
           padding: 24,
      },
-     logo: {
-          width: '100%',
-          height: 200,
-          minHeight: 150,
-          aspectRatio: 5.5,
-          marginBottom: 40,
+     heading: {
+          fontSize: 26,
+          fontWeight: 'bold',
+          color: '#fff',
+          marginBottom: 32,
      },
      input: {
           width: '100%',
@@ -81,29 +72,25 @@ const styles = StyleSheet.create({
           color: '#fff',
           borderRadius: 8,
           padding: 12,
-          marginBottom: 12,
+          marginBottom: 16,
           borderColor: '#49441f',
           borderWidth: 1,
      },
      button: {
           backgroundColor: '#49441f',
           borderRadius: 8,
-          padding: 12,
+          padding: 14,
           width: '100%',
           alignItems: 'center',
           marginTop: 8,
      },
      buttonText: {
           color: '#fff',
-          fontWeight: 'bold',
+          fontWeight: '600',
      },
-     signUp: {
-          color: '#aaa',
+     backToLogin: {
           marginTop: 20,
-          fontSize: 14,
-     },
-     link: {
-          color: '#fff',
+          color: '#aaa',
           textDecorationLine: 'underline',
      },
 });
