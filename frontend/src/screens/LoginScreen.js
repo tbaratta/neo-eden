@@ -6,18 +6,30 @@ import {
      TouchableOpacity,
      StyleSheet,
      Image,
+     Alert,
+     ActivityIndicator,
 } from 'react-native';
+import { authAPI } from '../config/api';
 
 export default function LoginScreen({ navigation }) {
      const [email, setEmail] = useState('');
      const [password, setPassword] = useState('');
+     const [loading, setLoading] = useState(false);
 
-     const handleLogin = () => {
-          if (email && password) {
-               console.log('Login:', email);
+     const handleLogin = async () => {
+          if (!email || !password) {
+               Alert.alert('Error', 'Please enter both email and password');
+               return;
+          }
+
+          try {
+               setLoading(true);
+               await authAPI.login(email, password);
                navigation.replace('Tabs');
-          } else {
-               alert('Enter email and password');
+          } catch (error) {
+               Alert.alert('Error', error.toString());
+          } finally {
+               setLoading(false);
           }
      };
 
@@ -34,6 +46,8 @@ export default function LoginScreen({ navigation }) {
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
                />
 
                <TextInput
@@ -45,17 +59,23 @@ export default function LoginScreen({ navigation }) {
                     onChangeText={setPassword}
                />
 
-               <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                    <Text style={styles.buttonText}>Continue</Text>
+               <TouchableOpacity 
+                    style={[styles.button, loading && styles.buttonDisabled]} 
+                    onPress={handleLogin}
+                    disabled={loading}
+               >
+                    {loading ? (
+                         <ActivityIndicator color="#fff" />
+                    ) : (
+                         <Text style={styles.buttonText}>Continue</Text>
+                    )}
                </TouchableOpacity>
 
                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                     <Text style={styles.signUp}>
-                         Don’t have an account? <Text style={styles.link}>Sign up</Text>
+                         Don't have an account? <Text style={styles.link}>Sign up</Text>
                     </Text>
                </TouchableOpacity>
-
-
           </View>
      );
 }
@@ -92,6 +112,9 @@ const styles = StyleSheet.create({
           width: '100%',
           alignItems: 'center',
           marginTop: 8,
+     },
+     buttonDisabled: {
+          opacity: 0.7,
      },
      buttonText: {
           color: '#fff',

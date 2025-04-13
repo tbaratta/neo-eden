@@ -15,22 +15,12 @@ const pointSchema = new mongoose.Schema({
 });
 
 const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    minlength: 3,
-    maxlength: 20
-  },
   firstName: {
     type: String,
-    required: true,
     trim: true
   },
   lastName: {
     type: String,
-    required: true,
     trim: true
   },
   email: {
@@ -168,6 +158,11 @@ userSchema.statics.getNearbyUsers = async function(longitude, latitude, maxDista
 userSchema.methods.toJSON = function() {
   const user = this.toObject();
   delete user.password;
+  if (user.firstName && user.lastName) {
+    user.name = `${user.firstName} ${user.lastName}`;
+    delete user.firstName;
+    delete user.lastName;
+  }
   return user;
 };
 

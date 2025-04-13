@@ -3,10 +3,6 @@ import * as user from '../controllers/user.js';
 
 const router = express.Router();
 
-// Authentication routes
-router.post('/register', user.register);
-router.post('/login', user.login);
-
 // Profile routes
 router.get('/profile/:id', user.getProfile);
 router.put('/profile/:id', user.updateProfile);

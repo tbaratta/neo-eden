@@ -5,18 +5,35 @@ import {
      TextInput,
      TouchableOpacity,
      StyleSheet,
+     Alert,
+     ActivityIndicator,
 } from 'react-native';
+import { authAPI } from '../config/api';
 
 export default function RegisterScreen({ navigation }) {
+     const [name, setName] = useState('');
      const [email, setEmail] = useState('');
      const [password, setPassword] = useState('');
+     const [loading, setLoading] = useState(false);
 
-     const handleRegister = () => {
-          if (email && password) {
-               console.log('Registered:', email);
-               navigation.replace('Tabs'); // Later: validate & route securely
-          } else {
-               alert('Please fill in all fields');
+     const handleRegister = async () => {
+          if (!name || !email || !password) {
+               Alert.alert('Error', 'Please fill in all fields');
+               return;
+          }
+
+          try {
+               setLoading(true);
+               await authAPI.register({ name, email, password });
+               Alert.alert(
+                    'Success',
+                    'Registration successful! Please log in.',
+                    [{ text: 'OK', onPress: () => navigation.goBack() }]
+               );
+          } catch (error) {
+               Alert.alert('Error', error.toString());
+          } finally {
+               setLoading(false);
           }
      };
 
@@ -25,11 +42,21 @@ export default function RegisterScreen({ navigation }) {
                <Text style={styles.heading}>Create an Account</Text>
 
                <TextInput
+                    placeholder="Name"
+                    placeholderTextColor="#aaa"
+                    style={styles.input}
+                    value={name}
+                    onChangeText={setName}
+               />
+
+               <TextInput
                     placeholder="Email"
                     placeholderTextColor="#aaa"
                     style={styles.input}
                     value={email}
                     onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
                />
 
                <TextInput
@@ -41,8 +68,16 @@ export default function RegisterScreen({ navigation }) {
                     onChangeText={setPassword}
                />
 
-               <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                    <Text style={styles.buttonText}>Register</Text>
+               <TouchableOpacity 
+                    style={[styles.button, loading && styles.buttonDisabled]}
+                    onPress={handleRegister}
+                    disabled={loading}
+               >
+                    {loading ? (
+                         <ActivityIndicator color="#fff" />
+                    ) : (
+                         <Text style={styles.buttonText}>Register</Text>
+                    )}
                </TouchableOpacity>
 
                <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -83,6 +118,9 @@ const styles = StyleSheet.create({
           width: '100%',
           alignItems: 'center',
           marginTop: 8,
+     },
+     buttonDisabled: {
+          opacity: 0.7,
      },
      buttonText: {
           color: '#fff',

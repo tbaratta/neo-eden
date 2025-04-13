@@ -39,8 +39,10 @@ import gemini from './routes/gemini.js';
 import resources from './routes/resources.js';
 import users from './routes/user.js';
 import analyses from './routes/analysis.js';
+import auth from './routes/auth.js';
 
 // API Routes
+app.use('/api/auth', auth);
 app.use('/api/insights', insight);
 app.use('/api/gemini', gemini);
 app.use('/api/resources', resources);
@@ -54,6 +56,7 @@ app.get('/', (req, res) => {
     version: '1.0.0',
     documentation: '/api/docs',
     endpoints: {
+      auth: '/api/auth',
       resources: '/api/resources',
       users: '/api/users',
       analysis: '/api/analysis',
@@ -68,6 +71,7 @@ app.use((req, res) => {
   res.status(404).json({
     message: 'Route not found',
     availableEndpoints: {
+      auth: '/api/auth',
       resources: '/api/resources',
       users: '/api/users',
       analysis: '/api/analysis',
