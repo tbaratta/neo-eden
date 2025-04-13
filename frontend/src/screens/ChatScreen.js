@@ -1,18 +1,18 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { sendMessage } from '../config/api';
 
-export default function ChatBox({ route, navigation }) {
+import { useLayoutEffect } from 'react';
+
+export default function ChatBox({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, [navigation]);
-
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  const { image, prompt } = route.params || {}; // Access image from route params
 
   const handleSend = async () => {
     if (!inputMessage.trim()) return;
@@ -37,8 +37,8 @@ export default function ChatBox({ route, navigation }) {
       };
       setChatHistory(prev => [...prev, loadingMessage]);
 
-      // API call to Gemini API
-      const response = await sendMessageToGemini(messageToSend); // Call Gemini API
+      // Send to backend and get response
+      const response = await sendMessage(messageToSend);
 
       // Remove loading message and add AI response
       setChatHistory(prev =>
@@ -61,65 +61,46 @@ export default function ChatBox({ route, navigation }) {
     }
   };
 
-  const sendMessageToGemini = async (message) => {
-    try {
-      const response = await fetch('http://10.245.6.249:5000/api/gemini/analyze', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: message,
-        }),
-      });
-
-      // Check if the response is successful (status code 200-299)
-      if (!response.ok) {
-        throw new Error(`Failed to fetch from Gemini API, status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // Check if data.reply exists, else return a default message
-      return { reply: data.reply || 'Sorry, no response from AI' };
-
-    } catch (error) {
-      console.error('Error calling Gemini API:', error);
-      // Display a user-friendly error message
-      throw new Error('Error with Gemini API: ' + error.message);
-    }
-  };
-
-
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={[styles.backArrow, { color: '#fff', fontSize: 18 }]}>Back</Text>
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <Text style={styles.title}>BOB THE GUIDE</Text>
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('ChatHistory')}>
+          <Text style={styles.icon}>📝</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>BOB THE GUIDE</Text>
       </View>
 
       {/* Chat Area */}
-      <ScrollView style={styles.chatArea} contentContainerStyle={styles.chatContent}>
+      <ScrollView
+        style={styles.chatArea}
+        contentContainerStyle={styles.chatContent}
+      >
         {chatHistory.map((message, index) => (
           <View
             key={index}
-            style={[styles.messageBubble, message.isUser ? styles.userMessage : styles.aiMessage]}>
-            {message.isUser ? (
-              <Text style={styles.messageText}>{message.text}</Text>
+            style={[
+              styles.messageBubble,
+              message.isUser ? styles.userMessage : styles.aiMessage,
+              message.isError && styles.errorMessage,
+              message.isLoading && styles.loadingMessage
+            ]}
+          >
+            {message.isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="small" color="#9C5DFF" />
+                <Text style={styles.loadingText}>{message.text}</Text>
+              </View>
             ) : (
-              <>
-                {message.isLoading && (
-                  <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="small" color="#9C5DFF" />
-                    <Text style={styles.loadingText}>{message.text}</Text>
-                  </View>
-                )}
-                {!message.isLoading && message.text && <Text style={styles.messageText}>{message.text}</Text>}
-                {image && !message.isLoading && (
-                  <Image source={{ uri: image.uri }} style={styles.imagePreview} />
-                )}
-              </>
+              <Text style={[
+                styles.messageText,
+                message.isUser && styles.userMessageText,
+                message.isError && styles.errorText
+              ]}>
+                {message.text}
+              </Text>
             )}
           </View>
         ))}
@@ -136,6 +117,7 @@ export default function ChatBox({ route, navigation }) {
           editable={!isLoading}
           multiline
           returnKeyType="send"
+          blurOnSubmit={true}
           onSubmitEditing={() => {
             if (inputMessage.trim()) {
               handleSend();
@@ -145,8 +127,12 @@ export default function ChatBox({ route, navigation }) {
         <TouchableOpacity
           onPress={handleSend}
           disabled={isLoading || !inputMessage.trim()}
-          style={styles.sendButton}>
-          <Text style={styles.sendIcon}>➤</Text>
+          style={styles.sendButton}
+        >
+          <Text style={[
+            styles.sendIcon,
+            (isLoading || !inputMessage.trim()) && styles.sendIconDisabled
+          ]}>➤</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -154,24 +140,16 @@ export default function ChatBox({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  imagePreview: {
-    width: 150,
-    height: 150,
-    borderRadius: 10,
-    marginTop: 10,
-    alignSelf: 'center',
-  },
   container: {
     flex: 1,
-    backgroundColor: '#49441f',
-    paddingTop: 60,
-    paddingHorizontal: 20,
+    backgroundColor: '#49441f', // Set background color
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    paddingHorizontal: 30,
+    paddingTop: 70,
   },
   backArrow: {
     color: '#fff',
@@ -182,13 +160,20 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
   },
+  icon: {
+    color: '#fff',
+    fontSize: 22,
+    gap: 100,
+  },
   chatArea: {
     flex: 1,
     backgroundColor: '#fff',
     borderRadius: 30,
     borderWidth: 2,
     borderColor: '#9C5DFF',
-    marginBottom: 5,
+    marginHorizontal: 20,
+    marginVertical: 20,
+    marginBottom: 15,
   },
   chatContent: {
     padding: 15,
@@ -207,6 +192,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F0',
     alignSelf: 'flex-start',
   },
+  errorMessage: {
+    backgroundColor: '#FFE5E5',
+  },
+  loadingMessage: {
+    backgroundColor: '#F8F8F8',
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+  },
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -220,25 +213,35 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000',
   },
+  userMessageText: {
+    color: '#fff',
+  },
+  errorText: {
+    color: '#FF0000',
+  },
   inputArea: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 30,
-    paddingHorizontal: 5,
-    height: 30,
+    paddingHorizontal: 15,
+    marginHorizontal: 20,
+    marginBottom: 125,
+    height: 40,
   },
   input: {
     flex: 1,
     fontSize: 16,
     color: '#000',
   },
-  sendButton: {
-    padding: 8,
-  },
   sendIcon: {
     fontSize: 20,
     color: '#9C5DFF',
   },
+  sendIconDisabled: {
+    opacity: 0.5,
+  },
+  sendButton: {
+    padding: 8,
+  },
 });
-

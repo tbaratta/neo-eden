@@ -92,7 +92,7 @@ export const authAPI = {
 
 export const sendMessage = async (message) => {
   try {
-    const response = await api.post('/gemini/ask', { prompt: message });
+    const response = await api.post('/gemini/analyze', { prompt: message });
     return {
       reply: response.data.reply || response.data.message || 'No response received'
     };
