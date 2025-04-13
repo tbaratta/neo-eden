@@ -72,6 +72,7 @@ export default function CameraScreen({ navigation }) {
                     flexGrow: 1,
                     backgroundColor: '#1a1a1a',
                     padding: 24,
+                    paddingBottom: 100, // 👈 Adds space so button doesn’t hide behind tab bar
                     alignItems: 'center',
                     justifyContent: 'flex-start',
                }}
