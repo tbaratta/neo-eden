@@ -3,7 +3,10 @@ import { View, StyleSheet, Image, TextInput, Keyboard, TouchableOpacity, Text, S
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
-export default function MapScreen() {
+export default function MapScreen({ navigation }) {
+    navigation.setOptions({
+      headerShown: false,
+    });
      const mapRef = useRef(null);
      const [searchText, setSearchText] = useState('');
      const [userLocation, setUserLocation] = useState(null);
@@ -256,7 +259,7 @@ const styles = StyleSheet.create({
      },
      searchContainer: {
           position: 'absolute',
-          top: 40,
+          top: 60,
           left: 10,
           right: 10,
           zIndex: 10,
@@ -286,7 +289,7 @@ const styles = StyleSheet.create({
      },
      filters: {
           position: 'absolute',
-          top: 95,
+          top: 115,
           left: 10,
           right: 10,
           flexDirection: 'row',

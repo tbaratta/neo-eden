@@ -65,10 +65,9 @@ export default function ChatBox({ navigation }) {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Text style={[styles.backArrow, { color: '#fff', fontSize: 18 }]}>Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>BOB THE GUIDE</Text>
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <Text style={styles.title}>BOB THE GUIDE</Text>
+        </View>
         <TouchableOpacity onPress={() => navigation.navigate('ChatHistory')}>
         <Text style={styles.icon}>📝</Text>
         </TouchableOpacity>
@@ -143,15 +142,14 @@ export default function ChatBox({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#49441f',
-    paddingTop: 60,
-    paddingHorizontal: 20,
+    backgroundColor: '#49441f', // Set background color
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    paddingHorizontal: 30,
+    paddingTop: 70,
   },
   backArrow: {
     color: '#fff',
@@ -165,6 +163,7 @@ const styles = StyleSheet.create({
   icon: {
     color: '#fff',
     fontSize: 22,
+    gap: 100, 
   },
   chatArea: {
     flex: 1,
@@ -172,7 +171,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 2,
     borderColor: '#9C5DFF',
-    marginBottom: 5,
+    marginHorizontal: 20,
+    marginVertical: 20,
+    marginBottom: 15,
   },
   chatContent: {
     padding: 15,
@@ -223,8 +224,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 30,
-    paddingHorizontal: 5,
-    height: 30,
+    paddingHorizontal: 15,
+    marginHorizontal: 20,
+    marginBottom: 125,
+    height: 40,
   },
   input: {
     flex: 1,
