@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/', async (req, res) => {
   try {
     const insight = new Insight({
-      image: req.body.image, // base64 string or image URL
+      image: req.body.image,
       prompt: req.body.prompt,
       geminiResponse: req.body.geminiResponse
     });
@@ -15,17 +15,40 @@ router.post('/', async (req, res) => {
     const savedInsight = await insight.save();
     res.status(201).json(savedInsight);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error creating insight:', error);
+    res.status(400).json({ 
+      message: error.message,
+      error: process.env.NODE_ENV === 'development' ? error : {}
+    });
   }
 });
 
-// Get all insights
+// Get all insights with pagination
 router.get('/', async (req, res) => {
   try {
-    const insights = await Insight.find();
-    res.json(insights);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const insights = await Insight.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Insight.countDocuments();
+
+    res.json({
+      insights,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+      totalInsights: total
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error fetching insights:', error);
+    res.status(500).json({ 
+      message: error.message,
+      error: process.env.NODE_ENV === 'development' ? error : {}
+    });
   }
 });
 
@@ -33,13 +56,16 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const insight = await Insight.findById(req.params.id);
-    if (insight) {
-      res.json(insight);
-    } else {
-      res.status(404).json({ message: 'Insight not found' });
+    if (!insight) {
+      return res.status(404).json({ message: 'Insight not found' });
     }
+    res.json(insight);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error fetching insight:', error);
+    res.status(500).json({ 
+      message: error.message,
+      error: process.env.NODE_ENV === 'development' ? error : {}
+    });
   }
 });
 
@@ -49,22 +75,26 @@ router.put('/:id', async (req, res) => {
     const updates = {
       image: req.body.image,
       prompt: req.body.prompt,
-      geminiResponse: req.body.geminiResponse
+      geminiResponse: req.body.geminiResponse,
+      updatedAt: Date.now()
     };
 
     const updatedInsight = await Insight.findByIdAndUpdate(
       req.params.id,
       updates,
-      { new: true }
+      { new: true, runValidators: true }
     );
 
-    if (updatedInsight) {
-      res.json(updatedInsight);
-    } else {
-      res.status(404).json({ message: 'Insight not found' });
+    if (!updatedInsight) {
+      return res.status(404).json({ message: 'Insight not found' });
     }
+    res.json(updatedInsight);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Error updating insight:', error);
+    res.status(400).json({ 
+      message: error.message,
+      error: process.env.NODE_ENV === 'development' ? error : {}
+    });
   }
 });
 
@@ -72,14 +102,20 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const deletedInsight = await Insight.findByIdAndDelete(req.params.id);
-    if (deletedInsight) {
-      res.json({ message: 'Insight deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Insight not found' });
+    if (!deletedInsight) {
+      return res.status(404).json({ message: 'Insight not found' });
     }
+    res.json({ 
+      message: 'Insight deleted successfully',
+      deletedInsight
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error deleting insight:', error);
+    res.status(500).json({ 
+      message: error.message,
+      error: process.env.NODE_ENV === 'development' ? error : {}
+    });
   }
 });
 
-export default router;
+export default router; 
