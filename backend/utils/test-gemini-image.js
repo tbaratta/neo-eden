@@ -25,7 +25,7 @@ async function main() {
     // Initialize the model
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // For image input, use the gemini-pro-vision model
+    // For image input, use the gemini-1.5-flash model
     const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     // Get the image data
