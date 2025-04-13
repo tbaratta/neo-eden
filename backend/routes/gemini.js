@@ -3,6 +3,6 @@ import { validatePrompt, generateResponse } from '../controllers/gemini.js';
 
 const router = express.Router();
 
-router.post('/ask', validatePrompt, generateResponse);
+router.post('/analyze', validatePrompt, generateResponse);
 
 export default router;
