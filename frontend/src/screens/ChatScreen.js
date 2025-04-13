@@ -143,15 +143,14 @@ export default function ChatBox({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#49441f',
-    paddingTop: 60,
-    paddingHorizontal: 20,
+    backgroundColor: '#49441f', // Set background color
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
+    paddingHorizontal: 30,
+    paddingTop: 70,
   },
   backArrow: {
     color: '#fff',
@@ -172,7 +171,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 2,
     borderColor: '#9C5DFF',
-    marginBottom: 5,
+    marginHorizontal: 20,
+    marginVertical: 20,
+    marginBottom: 15,
   },
   chatContent: {
     padding: 15,
@@ -223,8 +224,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 30,
-    paddingHorizontal: 5,
-    height: 30,
+    paddingHorizontal: 15,
+    marginHorizontal: 20,
+    marginBottom: 125,
+    height: 40,
   },
   input: {
     flex: 1,
