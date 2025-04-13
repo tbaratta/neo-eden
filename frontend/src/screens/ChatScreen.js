@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Image } from 'react-native';
-import { useLayoutEffect } from 'react';
 
 export default function ChatBox({ route, navigation }) {
   useLayoutEffect(() => {
@@ -13,7 +12,7 @@ export default function ChatBox({ route, navigation }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { image, prompt } = route.params || {};  // Access image from route params
+  const { image, prompt } = route.params || {}; // Access image from route params
 
   const handleSend = async () => {
     if (!inputMessage.trim()) return;
@@ -38,8 +37,8 @@ export default function ChatBox({ route, navigation }) {
       };
       setChatHistory(prev => [...prev, loadingMessage]);
 
-      // Simulate a backend call
-      const response = await sendMessage(messageToSend); // Replace with real API call
+      // API call to Gemini API
+      const response = await sendMessageToGemini(messageToSend); // Call Gemini API
 
       // Remove loading message and add AI response
       setChatHistory(prev =>
@@ -62,6 +61,34 @@ export default function ChatBox({ route, navigation }) {
     }
   };
 
+  const sendMessageToGemini = async (message) => {
+    try {
+      const response = await fetch('http://10.245.6.249:5000/api/gemini/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: message,
+        }),
+      });
+
+      // Check if the response is successful (status code 200-299)
+      if (!response.ok) {
+        throw new Error(`Failed to fetch from Gemini API, status: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      // Check if data.reply exists, else return a default message
+      return { reply: data.reply || 'Sorry, no response from AI' };
+
+    } catch (error) {
+      console.error('Error calling Gemini API:', error);
+      // Display a user-friendly error message
+      throw new Error('Error with Gemini API: ' + error.message);
+    }
+  };
+
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -73,15 +100,11 @@ export default function ChatBox({ route, navigation }) {
       </View>
 
       {/* Chat Area */}
-      <ScrollView
-        style={styles.chatArea}
-        contentContainerStyle={styles.chatContent}
-      >
+      <ScrollView style={styles.chatArea} contentContainerStyle={styles.chatContent}>
         {chatHistory.map((message, index) => (
           <View
             key={index}
-            style={[styles.messageBubble, message.isUser ? styles.userMessage : styles.aiMessage]}
-          >
+            style={[styles.messageBubble, message.isUser ? styles.userMessage : styles.aiMessage]}>
             {message.isUser ? (
               <Text style={styles.messageText}>{message.text}</Text>
             ) : (
@@ -93,7 +116,6 @@ export default function ChatBox({ route, navigation }) {
                   </View>
                 )}
                 {!message.isLoading && message.text && <Text style={styles.messageText}>{message.text}</Text>}
-                {/* Display the image if available */}
                 {image && !message.isLoading && (
                   <Image source={{ uri: image.uri }} style={styles.imagePreview} />
                 )}
@@ -123,8 +145,7 @@ export default function ChatBox({ route, navigation }) {
         <TouchableOpacity
           onPress={handleSend}
           disabled={isLoading || !inputMessage.trim()}
-          style={styles.sendButton}
-        >
+          style={styles.sendButton}>
           <Text style={styles.sendIcon}>➤</Text>
         </TouchableOpacity>
       </View>
@@ -161,10 +182,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
   },
-  icon: {
-    color: '#fff',
-    fontSize: 22,
-  },
   chatArea: {
     flex: 1,
     backgroundColor: '#fff',
@@ -190,14 +207,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F0',
     alignSelf: 'flex-start',
   },
-  errorMessage: {
-    backgroundColor: '#FFE5E5',
-  },
-  loadingMessage: {
-    backgroundColor: '#F8F8F8',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-  },
   loadingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -210,12 +219,6 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 16,
     color: '#000',
-  },
-  userMessageText: {
-    color: '#fff',
-  },
-  errorText: {
-    color: '#FF0000',
   },
   inputArea: {
     flexDirection: 'row',
@@ -230,14 +233,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#000',
   },
+  sendButton: {
+    padding: 8,
+  },
   sendIcon: {
     fontSize: 20,
     color: '#9C5DFF',
   },
-  sendIconDisabled: {
-    opacity: 0.5,
-  },
-  sendButton: {
-    padding: 8,
-  },
 });
+
