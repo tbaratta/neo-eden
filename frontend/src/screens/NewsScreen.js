@@ -109,29 +109,33 @@ export default function NewsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Logo */}
+      {/* Header with logo and action buttons */}
       <Image
         source={require('../../assets/images/logo-white.png')}
-        style={styles.logo}
+        style={[styles.logo, { height: 80 }]} // slightly bigger
       />
 
-      {/* Search and Create button row */}
       <View style={styles.headerRow}>
-        <View style={styles.searchContainer}>
-          <MaterialCommunityIcons name="magnify" size={24} color="#999" style={styles.searchIcon} />
-          <TextInput
-            value={searchText}
-            onChangeText={setSearchText}
-            placeholder="Search updates..."
-            placeholderTextColor="#999"
-            style={styles.searchInput}
-          />
-        </View>
-        <TouchableOpacity 
+        <TouchableOpacity
+          style={styles.filterButton}
+          onPress={() => {
+            // ***************************
+            // TODO: Hook up actual filter modal or sorting logic
+            // yoooo jordan i think you would be good at this :)
+            // ***************************
+            alert('Filter toggle coming soon!');
+          }}
+        >
+          <MaterialCommunityIcons name="filter-variant" size={24} color="#fff" />
+          <Text style={styles.buttonLabel}>Sort Reports</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
           style={styles.createButton}
           onPress={() => setModalVisible(true)}
         >
           <MaterialCommunityIcons name="plus" size={24} color="#fff" />
+          <Text style={styles.buttonLabel}>Add Report</Text>
         </TouchableOpacity>
       </View>
 
@@ -224,8 +228,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#4A4522',
   },
   logo: {
-    width: 150,
-    height: 40,
+    width: '100%',
+    height: 37,
     resizeMode: 'contain',
     alignSelf: 'center',
     marginTop: 60,
@@ -402,5 +406,28 @@ const styles = StyleSheet.create({
     color: '#666',
     textAlign: 'center',
     fontSize: 16,
-  }
+  },
+  buttonLabel: {
+    color: '#fff',
+    fontWeight: 'bold',
+    marginLeft: 8,
+    fontSize: 16,
+  },
+  createButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A4522',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+  },
+  filterButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4A4522',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginRight: 10,
+  },
 });
