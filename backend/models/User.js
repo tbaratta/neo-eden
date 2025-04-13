@@ -1,6 +1,17 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+// Drop existing indexes before creating new ones
+mongoose.connection.on('connected', async () => {
+  try {
+    console.log('Dropping existing User indexes...');
+    await mongoose.connection.collection('users').dropIndexes();
+    console.log('Successfully dropped User indexes');
+  } catch (error) {
+    console.error('Error dropping indexes:', error);
+  }
+});
+
 const pointSchema = new mongoose.Schema({
   type: {
     type: String,
@@ -17,7 +28,8 @@ const pointSchema = new mongoose.Schema({
 const userSchema = new mongoose.Schema({
   firstName: {
     type: String,
-    trim: true
+    trim: true,
+    required: true
   },
   lastName: {
     type: String,
@@ -26,7 +38,6 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
     lowercase: true
   },
@@ -86,6 +97,22 @@ const userSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     default: Date.now
+  }
+});
+
+// Create indexes after defining schema
+userSchema.post('save', async function(doc, next) {
+  try {
+    await mongoose.connection.collection('users').createIndex(
+      { email: 1 },
+      { 
+        unique: true,
+        collation: { locale: 'en', strength: 2 }
+      }
+    );
+    next();
+  } catch (error) {
+    next(error);
   }
 });
 

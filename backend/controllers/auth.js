@@ -3,7 +3,13 @@ import User from '../models/User.js';
 // Register a new user
 export const register = async (req, res) => {
     try {
-        console.log('Register request received:', req.body);
+        console.log('\n=== Starting Registration Process ===');
+        console.log('Register request received:', {
+            name: req.body.name,
+            email: req.body.email,
+            passwordLength: req.body.password?.length
+        });
+
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
@@ -11,21 +17,39 @@ export const register = async (req, res) => {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        // Detailed logging for email check
+        const emailLower = email.toLowerCase();
+        console.log('\nChecking database for existing users:');
+        console.log('Email to check (lowercase):', emailLower);
+        
+        // Find ALL users with similar emails to debug
+        const allUsers = await User.find({});
+        console.log('All existing users:', allUsers.map(u => ({ id: u._id, email: u.email })));
+
+        const existingUser = await User.findOne({ email: emailLower });
+        console.log('Direct email search result:', existingUser ? {
+            id: existingUser._id,
+            email: existingUser.email
+        } : 'No user found');
+        
         if (existingUser) {
-            console.log('User already exists:', email);
-            return res.status(400).json({ message: 'User already exists' });
+            console.log('Email already exists:', emailLower);
+            return res.status(400).json({ message: 'Email already exists' });
         }
 
         // Split name into firstName and lastName
         const [firstName, ...lastNameParts] = name.trim().split(' ');
-        const lastName = lastNameParts.join(' ') || firstName;
+        const lastName = lastNameParts.join(' ');
+
+        console.log('\nCreating new user with:', {
+            email: emailLower,
+            firstName,
+            lastName
+        });
 
         // Create new user
         const user = new User({
-            username: email.split('@')[0], // Use part of email as username
-            email,
+            email: emailLower,
             password,
             firstName,
             lastName,
@@ -45,34 +69,51 @@ export const register = async (req, res) => {
             }
         });
 
-        console.log('Attempting to save user:', {
-            username: user.username,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName
-        });
+        try {
+            await user.save();
+            console.log('\nUser saved successfully:', {
+                id: user._id,
+                email: user.email
+            });
 
-        await user.save();
-        console.log('User registered successfully:', email);
-
-        // Return success without password
-        const userResponse = user.toJSON();
-        res.status(201).json({
-            message: 'User registered successfully',
-            user: userResponse
-        });
+            // Return success without password
+            const userResponse = user.toJSON();
+            res.status(201).json({
+                message: 'User registered successfully',
+                user: userResponse
+            });
+        } catch (saveError) {
+            console.error('\nError saving user:', {
+                error: saveError.message,
+                code: saveError.code,
+                keyPattern: saveError.keyPattern,
+                keyValue: saveError.keyValue,
+                stack: saveError.stack
+            });
+            throw saveError;
+        }
     } catch (error) {
-        console.error('Register error details:', {
+        console.error('\nRegistration error details:', {
             name: error.name,
             message: error.message,
-            stack: error.stack,
-            code: error.code
+            code: error.code,
+            keyPattern: error.keyPattern,
+            keyValue: error.keyValue,
+            stack: error.stack
         });
         
         // Handle specific MongoDB errors
         if (error.code === 11000) {
+            console.error('Duplicate key error details:', {
+                keyPattern: error.keyPattern,
+                keyValue: error.keyValue
+            });
             return res.status(400).json({ 
-                message: 'Email or username already exists'
+                message: 'Email already exists',
+                details: process.env.NODE_ENV === 'development' ? {
+                    keyPattern: error.keyPattern,
+                    keyValue: error.keyValue
+                } : undefined
             });
         }
 
