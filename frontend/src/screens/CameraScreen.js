@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
      View,
      Text,
@@ -15,7 +15,12 @@ import {
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
-export default function CameraScreen() {
+export default function CameraScreen({ navigation }) {
+  useEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
      const [image, setImage] = useState(null);
      const [prompt, setPrompt] = useState('');
      const [loading, setLoading] = useState(false);
@@ -69,7 +74,9 @@ export default function CameraScreen() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                          imageBase64: image.base64,
-                         prompt,
+                         prompt: 
+                         `You are a botanist survival chatbot that analyzes plant photos and helps with anything related to gardening or survival. Identify plants from the image and provide useful, accurate, and brief tips in bullet point format on farming, foraging, or water sourcing. Stay focused only on survival and plant-related topics; avoid off-topic responses. Format responses clearly with spacing and minimal length, and only ask questions when needed for accuracy.
+                         ${prompt}`,
                     }),
                });
 
@@ -110,7 +117,7 @@ export default function CameraScreen() {
                          <Image
                               source={require('../../assets/images/logo-white.png')}
                               resizeMode="contain"
-                              style={{ width: '80%', height: 80, marginBottom: 32 }}
+                              style={{ width: '80%', height: 150, marginBottom: 32 }}
                          />
 
                          {!image ? (
