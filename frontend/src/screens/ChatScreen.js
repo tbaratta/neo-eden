@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
-import { sendMessage } from '../config/api';
-
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator, Image } from 'react-native';
 import { useLayoutEffect } from 'react';
 
-export default function ChatBox({ navigation }) {
+export default function ChatBox({ route, navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerShown: false,
     });
   }, [navigation]);
+
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const { image, prompt } = route.params || {};  // Access image from route params
 
   const handleSend = async () => {
     if (!inputMessage.trim()) return;
@@ -37,8 +38,8 @@ export default function ChatBox({ navigation }) {
       };
       setChatHistory(prev => [...prev, loadingMessage]);
 
-      // Send to backend and get response
-      const response = await sendMessage(messageToSend);
+      // Simulate a backend call
+      const response = await sendMessage(messageToSend); // Replace with real API call
 
       // Remove loading message and add AI response
       setChatHistory(prev =>
@@ -65,12 +66,10 @@ export default function ChatBox({ navigation }) {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View style={{ alignItems: 'center', flex: 1 }}>
-          <Text style={styles.title}>BOB THE GUIDE</Text>
-        </View>
-        <TouchableOpacity onPress={() => navigation.navigate('ChatHistory')}>
-        <Text style={styles.icon}>📝</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={[styles.backArrow, { color: '#fff', fontSize: 18 }]}>Back</Text>
         </TouchableOpacity>
+        <Text style={styles.title}>BOB THE GUIDE</Text>
       </View>
 
       {/* Chat Area */}
@@ -81,26 +80,24 @@ export default function ChatBox({ navigation }) {
         {chatHistory.map((message, index) => (
           <View
             key={index}
-            style={[
-              styles.messageBubble,
-              message.isUser ? styles.userMessage : styles.aiMessage,
-              message.isError && styles.errorMessage,
-              message.isLoading && styles.loadingMessage
-            ]}
+            style={[styles.messageBubble, message.isUser ? styles.userMessage : styles.aiMessage]}
           >
-            {message.isLoading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="small" color="#9C5DFF" />
-                <Text style={styles.loadingText}>{message.text}</Text>
-              </View>
+            {message.isUser ? (
+              <Text style={styles.messageText}>{message.text}</Text>
             ) : (
-              <Text style={[
-                styles.messageText,
-                message.isUser && styles.userMessageText,
-                message.isError && styles.errorText
-              ]}>
-                {message.text}
-              </Text>
+              <>
+                {message.isLoading && (
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="small" color="#9C5DFF" />
+                    <Text style={styles.loadingText}>{message.text}</Text>
+                  </View>
+                )}
+                {!message.isLoading && message.text && <Text style={styles.messageText}>{message.text}</Text>}
+                {/* Display the image if available */}
+                {image && !message.isLoading && (
+                  <Image source={{ uri: image.uri }} style={styles.imagePreview} />
+                )}
+              </>
             )}
           </View>
         ))}
@@ -117,7 +114,6 @@ export default function ChatBox({ navigation }) {
           editable={!isLoading}
           multiline
           returnKeyType="send"
-          blurOnSubmit={true}
           onSubmitEditing={() => {
             if (inputMessage.trim()) {
               handleSend();
@@ -129,10 +125,7 @@ export default function ChatBox({ navigation }) {
           disabled={isLoading || !inputMessage.trim()}
           style={styles.sendButton}
         >
-          <Text style={[
-            styles.sendIcon,
-            (isLoading || !inputMessage.trim()) && styles.sendIconDisabled
-          ]}>➤</Text>
+          <Text style={styles.sendIcon}>➤</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -140,16 +133,24 @@ export default function ChatBox({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+  imagePreview: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    marginTop: 10,
+    alignSelf: 'center',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#49441f', // Set background color
+    backgroundColor: '#49441f',
+    paddingTop: 60,
+    paddingHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 30,
-    paddingTop: 70,
+    marginBottom: 10,
   },
   backArrow: {
     color: '#fff',
@@ -163,7 +164,6 @@ const styles = StyleSheet.create({
   icon: {
     color: '#fff',
     fontSize: 22,
-    gap: 100, 
   },
   chatArea: {
     flex: 1,
@@ -171,9 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 2,
     borderColor: '#9C5DFF',
-    marginHorizontal: 20,
-    marginVertical: 20,
-    marginBottom: 15,
+    marginBottom: 5,
   },
   chatContent: {
     padding: 15,
@@ -224,10 +222,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 30,
-    paddingHorizontal: 15,
-    marginHorizontal: 20,
-    marginBottom: 125,
-    height: 40,
+    paddingHorizontal: 5,
+    height: 30,
   },
   input: {
     flex: 1,
