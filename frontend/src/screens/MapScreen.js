@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Image, TextInput, Keyboard, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, Image, TextInput, Keyboard, TouchableOpacity, Text, ScrollView } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
@@ -15,8 +15,8 @@ export default function MapScreen() {
      });
      const [loading, setLoading] = useState(true);
      const [errorMsg, setErrorMsg] = useState(null);
+     const [activeFilters, setActiveFilters] = useState(['water', 'radiation', 'farming']);
 
-     // Animate to user location
      const animateToUserLocation = async (location) => {
           if (mapRef.current && location) {
                const userRegion = {
@@ -68,18 +68,14 @@ export default function MapScreen() {
                const results = await Location.geocodeAsync(searchText);
                if (results.length > 0) {
                     const { latitude, longitude } = results[0];
-                    setMapRegion({
+                    const newRegion = {
                          latitude,
                          longitude,
                          latitudeDelta: 0.3,
                          longitudeDelta: 0.3,
-                    });
-                    mapRef.current.animateToRegion({
-                         latitude,
-                         longitude,
-                         latitudeDelta: 0.3,
-                         longitudeDelta: 0.3,
-                    }, 2000);
+                    };
+                    setMapRegion(newRegion);
+                    mapRef.current.animateToRegion(newRegion, 2000);
                     Keyboard.dismiss();
                } else {
                     alert('City not found');
@@ -94,6 +90,12 @@ export default function MapScreen() {
           if (userLocation) {
                animateToUserLocation(userLocation);
           }
+     };
+
+     const toggleFilter = (filter) => {
+          setActiveFilters((prev) =>
+               prev.includes(filter) ? prev.filter((f) => f !== filter) : [...prev, filter]
+          );
      };
 
      const freshWaterSources = [
@@ -175,80 +177,134 @@ export default function MapScreen() {
 
      return (
           <View style={styles.container}>
-               <Image source={require('../../assets/images/logo-white.png')} style={styles.logo} />
-               <TextInput
-                    value={searchText}
-                    onChangeText={setSearchText}
-                    placeholder="Search locations..."
-                    placeholderTextColor="#999"
-                    onSubmitEditing={handleSearch}
-                    style={styles.searchInput}
-               />
-
-               <View style={styles.content}>
-                    <MapView style={styles.map} region={mapRegion} ref={mapRef}>
-                         {userLocation && (
-                              <Marker
-                                   coordinate={{
-                                        latitude: userLocation.latitude,
-                                        longitude: userLocation.longitude,
-                                   }}
-                                   title="You are here"
-                              >
-                                   <Image
-                                        source={require('../../assets/images/pin.png')}
-                                        style={styles.userMarker}
-                                   />
-                              </Marker>
-                         )}
-
-                         {freshWaterSources.map((source) => (
-                              <Marker key={source.id} coordinate={{ latitude: source.latitude, longitude: source.longitude }} title={source.name}>
-                                   <Image source={require('../../assets/images/wata.png')} style={styles.markerImage} />
-                              </Marker>
-                         ))}
-
-                         {radiationZones.map((zone) => (
-                              <Marker key={zone.id} coordinate={{ latitude: zone.latitude, longitude: zone.longitude }} title={zone.name}>
-                                   <Image source={require('../../assets/images/nuke.png')} style={styles.radiationMarker} />
-                              </Marker>
-                         ))}
-
-                         {farmingZones.map((zone) => (
-                              <Marker key={zone.id} coordinate={{ latitude: zone.latitude, longitude: zone.longitude }} title={zone.name}>
-                                   <Image source={require('../../assets/images/farm-land.png')} style={styles.farmMarker} />
-                              </Marker>
-                         ))}
-                    </MapView>
+               <View style={styles.searchContainer}>
+                    <TextInput
+                         style={styles.searchInput}
+                         placeholder="Search a city..."
+                         value={searchText}
+                         onChangeText={setSearchText}
+                         onSubmitEditing={handleSearch}
+                    />
+                    <TouchableOpacity style={styles.locateButton} onPress={handleLocateButtonPress}>
+                         <Text style={styles.locateButtonText}>📍</Text>
+                    </TouchableOpacity>
                </View>
 
-               <TouchableOpacity style={styles.locateButton} onPress={handleLocateButtonPress}>
-                    <Text style={styles.locateButtonText}>Locate Me</Text>
-               </TouchableOpacity>
+               <View style={styles.filters}>
+                    <TouchableOpacity
+                         style={[styles.filterButton, activeFilters.includes('water') && styles.activeFilter]}
+                         onPress={() => toggleFilter('water')}
+                    >
+                         <Text style={styles.filterText}>💧 Water</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                         style={[styles.filterButton, activeFilters.includes('radiation') && styles.activeFilter]}
+                         onPress={() => toggleFilter('radiation')}
+                    >
+                         <Text style={styles.filterText}>☢️ Radiation</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                         style={[styles.filterButton, activeFilters.includes('farming') && styles.activeFilter]}
+                         onPress={() => toggleFilter('farming')}
+                    >
+                         <Text style={styles.filterText}>🌱 Farming</Text>
+                    </TouchableOpacity>
+               </View>
+
+               <MapView
+                    ref={mapRef}
+                    style={styles.map}
+                    region={mapRegion}
+                    onRegionChangeComplete={(region) => setMapRegion(region)}
+               >
+                    <Marker coordinate={{ latitude: userLocation.latitude, longitude: userLocation.longitude }}>
+                         <Image source={require('../../assets/images/pin.png')} style={styles.markerIcon} />
+                    </Marker>
+                    
+                    {activeFilters.includes('water') &&
+                         freshWaterSources.map((source) => (
+                              <Marker key={source.id} coordinate={{ latitude: source.latitude, longitude: source.longitude }}>
+                                   <Image source={require('../../assets/images/wata.png')} style={styles.markerIcon} />
+                              </Marker>
+                         ))}
+                    {activeFilters.includes('radiation') &&
+                         radiationZones.map((zone) => (
+                              <Marker key={zone.id} coordinate={{ latitude: zone.latitude, longitude: zone.longitude }}>
+                                   <Image source={require('../../assets/images/nuke.png')} style={styles.markerIcon} />
+                              </Marker>
+                         ))}
+                    {activeFilters.includes('farming') &&
+                         farmingZones.map((zone) => (
+                              <Marker key={zone.id} coordinate={{ latitude: zone.latitude, longitude: zone.longitude }}>
+                                   <Image source={require('../../assets/images/farm-land.png')} style={styles.markerIcon} />
+                              </Marker>
+                         ))}
+               </MapView>
           </View>
      );
 }
 
 const styles = StyleSheet.create({
-     container: { flex: 1, backgroundColor: '#4A4522' },
-     logo: { width: 150, height: 40, resizeMode: 'contain', alignSelf: 'center', marginTop: 60, marginBottom: 20 },
-     searchInput: { backgroundColor: '#fff', borderRadius: 25, paddingHorizontal: 20, paddingVertical: 10, marginHorizontal: 20, marginBottom: 20, fontSize: 16 },
-     content: { flex: 1, backgroundColor: '#fff', borderTopLeftRadius: 30, borderTopRightRadius: 30, overflow: 'hidden' },
-     map: { width: '100%', height: '100%' },
-     markerImage: { width: 30, height: 30, resizeMode: 'contain' },
-     radiationMarker: { width: 30, height: 30, resizeMode: 'contain' },
-     farmMarker: { width: 30, height: 30, resizeMode: 'contain' },
-     userMarker: { width: 40, height: 40, resizeMode: 'contain' },
-     locateButton: {
+     container: {
+          flex: 1,
+     },
+     map: {
+          flex: 1,
+     },
+     searchContainer: {
           position: 'absolute',
-          bottom: 100,
-          left: '50%',
-          transform: [{ translateX: -75 }],
-          backgroundColor: '#007AFF',
-          paddingVertical: 15,
-          paddingHorizontal: 20,
-          borderRadius: 25,
+          top: 40,
+          left: 10,
+          right: 10,
+          zIndex: 10,
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: '#fff',
+          borderRadius: 8,
+          paddingHorizontal: 10,
+          shadowColor: '#000',
+          shadowOpacity: 0.2,
+          shadowOffset: { width: 0, height: 2 },
+          shadowRadius: 4,
           elevation: 5,
      },
-     locateButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+     searchInput: {
+          flex: 1,
+          paddingVertical: 10,
+          paddingHorizontal: 8,
+          fontSize: 16,
+     },
+     locateButton: {
+          padding: 8,
+          marginLeft: 5,
+     },
+     locateButtonText: {
+          fontSize: 22,
+     },
+     filters: {
+          position: 'absolute',
+          top: 95,
+          left: 10,
+          right: 10,
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          zIndex: 10,
+     },
+     filterButton: {
+          paddingVertical: 6,
+          paddingHorizontal: 12,
+          backgroundColor: '#ddd',
+          borderRadius: 20,
+     },
+     activeFilter: {
+          backgroundColor: '#90ee90',
+     },
+     filterText: {
+          fontWeight: 'bold',
+     },
+     markerIcon: {
+          width: 32,
+          height: 32,
+          resizeMode: 'contain',
+     },
 });
