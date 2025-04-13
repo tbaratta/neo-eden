@@ -1,10 +1,38 @@
-import React, { useState } from 'react';
-import { View, Image, TextInput, Text, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Image, TextInput, Text, StyleSheet, Dimensions } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
+import * as Location from 'expo-location';
 import NavBar from '../navigation/TabNavigator';
 
 export default function MapScreen({ navigation }) {
      const [searchText, setSearchText] = useState('');
+     const [location, setLocation] = useState(null);
+     const [errorMsg, setErrorMsg] = useState(null);
+
+     useEffect(() => {
+          (async () => {
+               let { status } = await Location.requestForegroundPermissionsAsync();
+               if (status !== 'granted') {
+                    setErrorMsg('Permission to access location was denied');
+                    return;
+               }
+
+               let location = await Location.getCurrentPositionAsync({});
+               setLocation(location);
+          })();
+     }, []);
+
+     const initialRegion = location ? {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+     } : {
+          latitude: 26.4739,  // FGCU's coordinates as default
+          longitude: -81.7748,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+     };
 
      return (
           <View style={styles.container}>
@@ -27,29 +55,22 @@ export default function MapScreen({ navigation }) {
                <View style={styles.mapContainer}>
                     <MapView
                          style={styles.map}
+                         initialRegion={initialRegion}
                          showsUserLocation={true}
+                         showsMyLocationButton={true}
                          showsCompass={true}
-                         initialRegion={{
-                              latitude: 37.78825,
-                              longitude: -122.4324,
-                              latitudeDelta: 0.05,
-                              longitudeDelta: 0.05,
-                         }}
                     >
                          <Marker
-                              coordinate={{ latitude: 37.78825, longitude: -122.4324 }}
-                              title="Custom Marker"
-                              description="This is a callout description"
+                              coordinate={initialRegion}
+                              title="Current Location"
                          >
-                              <Image
-                                   source={require('../../assets/pictures/navbar/4.png')}
-                                   style={styles.markerImage}
-                              />
-                              <Callout>
-                                   <View>
-                                        <Text>This is San Francisco</Text>
-                                   </View>
-                              </Callout>
+                              <View style={styles.markerContainer}>
+                                   <Image
+                                        source={require('../../assets/pictures/navbar/4.png')}
+                                        style={styles.markerImage}
+                                   />
+                                   <Text style={styles.markerText}>You are here</Text>
+                              </View>
                          </Marker>
                     </MapView>
                </View>
@@ -89,13 +110,25 @@ const styles = StyleSheet.create({
           borderTopRightRadius: 30,
      },
      map: {
-          flex: 1,
-          width: '100%',
+          width: Dimensions.get('window').width,
           height: '100%',
+     },
+     markerContainer: {
+          alignItems: 'center',
+          padding: 5,
      },
      markerImage: {
           width: 30,
           height: 30,
           resizeMode: 'contain',
+          marginBottom: 5,
      },
+     markerText: {
+          color: '#4A4522',
+          fontSize: 12,
+          fontWeight: 'bold',
+          backgroundColor: 'white',
+          padding: 2,
+          borderRadius: 4,
+     }
 });
