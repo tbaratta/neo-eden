@@ -123,7 +123,7 @@ export default function SettingsScreen({ navigation }) {
       {/* Light footer still above nav bar */}
       <View style={{ marginTop: 28, alignItems: 'center' }}>
         <Text style={{ color: '#ccc', fontSize: 16 }}>Neo Eden v1.0.0</Text>
-        <Text style={{ color: '#aaa', fontSize: 14 }}>Updated Apr 12, 2025</Text>
+        <Text style={{ color: '#aaa', fontSize: 14 }}>Updated Apr 13, 2025</Text>
       </View>
     </ScrollView>
   );

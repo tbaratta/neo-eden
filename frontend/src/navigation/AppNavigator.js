@@ -19,10 +19,10 @@ const AppNavigator = () => {
           headerShown: false
         }}
       >
-                <Stack.Screen name="Tabs" component={TabNavigator} />
 
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
+        <Stack.Screen name="Tabs" component={TabNavigator} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Waypoints" component={WaypointsScreen} />
         <Stack.Screen name="ChatHistory" component={ChatHistoryScreen} />

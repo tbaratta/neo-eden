@@ -4,9 +4,9 @@ import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
 export default function MapScreen({ navigation }) {
-     navigation.setOptions({
-          headerShown: false,
-     });
+    navigation.setOptions({
+      headerShown: false,
+    });
      const mapRef = useRef(null);
      const [searchText, setSearchText] = useState('');
      const [userLocation, setUserLocation] = useState(null);
@@ -220,13 +220,13 @@ export default function MapScreen({ navigation }) {
                     style={styles.map}
                     region={mapRegion}
                     onRegionChangeComplete={(region) => setMapRegion(region)}
-               >
-                    {userLocation && (
-                         <Marker coordinate={{ latitude: userLocation.latitude, longitude: userLocation.longitude }}>
-                              <Image source={require('../../assets/images/pin.png')} style={styles.markerIcon} />
-                         </Marker>
-                    )}
-
+               >    
+               { userLocation && (
+                    <Marker coordinate={{ latitude: userLocation.latitude, longitude: userLocation.longitude }}>
+                         <Image source={require('../../assets/images/pin.png')} style={styles.markerIcon} />
+                    </Marker>
+)}
+                    
                     {activeFilters.includes('water') &&
                          waterSources.map((source) => (
                               <Marker key={source.id} coordinate={{ latitude: source.latitude, longitude: source.longitude }}>

@@ -26,6 +26,7 @@ export default function LoginScreen({ navigation }) {
                setLoading(true);
                await authAPI.login(email, password);
                navigation.replace('Tabs');
+               
           } catch (error) {
                Alert.alert('Error', error.toString());
           } finally {
@@ -59,8 +60,8 @@ export default function LoginScreen({ navigation }) {
                     onChangeText={setPassword}
                />
 
-               <TouchableOpacity 
-                    style={[styles.button, loading && styles.buttonDisabled]} 
+               <TouchableOpacity
+                    style={[styles.button, loading && styles.buttonDisabled]}
                     onPress={handleLogin}
                     disabled={loading}
                >
