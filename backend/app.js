@@ -11,6 +11,7 @@ import resources from './routes/resources.js';
 import users from './routes/user.js';
 import analyses from './routes/analysis.js';
 import auth from './routes/auth.js';
+import news from './routes/news.js';
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/auth', auth);
 app.use('/api/resources', resources);
 app.use('/api/users', users);
 app.use('/api/analysis', analyses);
+app.use('/api/news', news);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI)
