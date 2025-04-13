@@ -18,7 +18,7 @@ export const sendMessage = async (message) => {
     const response = await api.post('/gemini/ask', {
       prompt: message
     });
-    
+
     console.log('Response received:', response.data);
     return {
       reply: response.data.reply || response.data.message || 'No response received'
@@ -40,4 +40,4 @@ export const sendMessage = async (message) => {
       throw new Error(error.response?.data?.message || 'An error occurred while processing your request.');
     }
   }
-}; 
+};

@@ -1,24 +1,24 @@
 import React from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-// Screens
-import HomeScreen from './src/screens/HomeScreen';
-import ChatScreen from './src/screens/ChatScreen';
-import NewsScreen from './src/screens/NewsScreen';
-
-
-const Stack = createNativeStackNavigator();
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AuthNavigator from './src/navigation/AuthNavigator';
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="News" component={NewsScreen} />
-
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <SafeAreaView style={styles.container}>
+          <AuthNavigator />
+        </SafeAreaView>
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#4A4522',
+  },
+});
