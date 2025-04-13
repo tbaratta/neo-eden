@@ -4,6 +4,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // Import screens
 import ChatScreen from '../screens/ChatScreen';
+import HomeScreen from '../screens/HomeScreen';
+// import MapScreen from '../screens/MapScreen';
+import NewsScreen from '../screens/NewsScreen';
 // import CameraScreen from '../screens/CameraScreen';
 // import SettingsScreen from '../screens/SettingsScreen';
 
@@ -27,6 +30,35 @@ const TabNavigator = () => {
           ),
         }}
       />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="home" color={color} size={size} />
+          ),
+        }}
+      />
+      {/* <Tab.Screen
+        name="Map"
+        component={MapScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="map" color={color} size={size} />
+          ),
+        }}
+      />   */}
+      <Tab.Screen
+        name="News"
+        component={NewsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="newspaper" color={color} size={size} />
+          ),
+        }}
+      />
+      
+      
       {/* <Tab.Screen
         name="Camera"
         component={CameraScreen}

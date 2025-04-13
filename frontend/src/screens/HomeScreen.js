@@ -9,7 +9,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       {/* Logo */}
-      <Image source={require('../../assets/logo/logo-white.png')} style={[styles.logo, { marginTop: 60 }]} />
+      <Image source={require('../../assets/images/logo-white.png')} style={[styles.logo, { marginTop: 60 }]} />
 
       {/* Search bar (working TextInput) */}
       <TextInput
