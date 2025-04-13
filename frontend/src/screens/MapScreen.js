@@ -1,46 +1,30 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Image, TextInput, ActivityIndicator, Text } from 'react-native';
-import MapView, { Marker, AnimatedRegion } from 'react-native-maps';
-import * as Location from 'expo-location'; // npx expo install expo-location
+import { View, StyleSheet, Image, TextInput, Keyboard, TouchableOpacity, Text } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
 
-const MapScreen = ({ navigation }) => {
+export default function MapScreen() {
      const mapRef = useRef(null);
      const [searchText, setSearchText] = useState('');
      const [userLocation, setUserLocation] = useState(null);
-     const [loading, setLoading] = useState(true);
-     const [errorMsg, setErrorMsg] = useState(null);
-     const [region, setRegion] = useState({
+     const [mapRegion, setMapRegion] = useState({
           latitude: 39.8283,
           longitude: -98.5795,
           latitudeDelta: 60,
           longitudeDelta: 60,
      });
+     const [loading, setLoading] = useState(true);
+     const [errorMsg, setErrorMsg] = useState(null);
 
-     // Function to animate to user location
+     // Animate to user location
      const animateToUserLocation = async (location) => {
           if (mapRef.current && location) {
-               // First, ensure we're zoomed out
-               const zoomedOutRegion = {
-                    latitude: 39.8283,
-                    longitude: -98.5795,
-                    latitudeDelta: 60,
-                    longitudeDelta: 60,
-               };
-               
-               setRegion(zoomedOutRegion);
-               mapRef.current.animateToRegion(zoomedOutRegion, 10);
-
-               // Wait for 1.5 seconds before starting zoom in
-               await new Promise(resolve => setTimeout(resolve, 500));
-
-               // Then animate to user's location
                const userRegion = {
                     latitude: location.latitude,
                     longitude: location.longitude,
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                };
-               
                mapRef.current.animateToRegion(userRegion, 3000);
           }
      };
@@ -61,11 +45,13 @@ const MapScreen = ({ navigation }) => {
                          longitude: location.coords.longitude,
                     };
                     setUserLocation(userLoc);
-                    
-                    // Wait for map to be ready
-                    setTimeout(() => {
-                         animateToUserLocation(userLoc);
-                    }, 500);
+
+                    Location.watchPositionAsync(
+                         { accuracy: Location.Accuracy.High, timeInterval: 5000, distanceInterval: 10 },
+                         (loc) => setUserLocation(loc.coords)
+                    );
+
+                    setTimeout(() => animateToUserLocation(userLoc), 500);
                } catch (error) {
                     console.error('Error getting location:', error);
                     setErrorMsg('Error getting location');
@@ -75,27 +61,70 @@ const MapScreen = ({ navigation }) => {
           })();
      }, []);
 
+     const handleSearch = async () => {
+          if (!searchText) return;
+
+          try {
+               const results = await Location.geocodeAsync(searchText);
+               if (results.length > 0) {
+                    const { latitude, longitude } = results[0];
+                    setMapRegion({
+                         latitude,
+                         longitude,
+                         latitudeDelta: 0.3,
+                         longitudeDelta: 0.3,
+                    });
+                    mapRef.current.animateToRegion({
+                         latitude,
+                         longitude,
+                         latitudeDelta: 0.3,
+                         longitudeDelta: 0.3,
+                    }, 2000);
+                    Keyboard.dismiss();
+               } else {
+                    alert('City not found');
+               }
+          } catch (error) {
+               console.error('Geocoding error:', error);
+               alert('Failed to find location.');
+          }
+     };
+
+     const handleLocateButtonPress = () => {
+          if (userLocation) {
+               animateToUserLocation(userLocation);
+          }
+     };
+
      const freshWaterSources = [
-          { id: 'lake1', name: 'Lake Okeechobee', latitude: 26.9387, longitude: -80.8022 },
-          { id: 'river1', name: 'Caloosahatchee River', latitude: 26.6426, longitude: -81.8723 },
-          { id: 'pond1', name: 'Pond Cypress', latitude: 26.2820, longitude: -81.5806 },
-          { id: 'lake2', name: 'Lake Tohopekaliga', latitude: 28.2485, longitude: -81.4069 },
-          { id: 'lake3', name: 'Lake Kissimmee', latitude: 27.8785, longitude: -81.3020 },
-          { id: 'river2', name: 'Peace River', latitude: 27.0231, longitude: -81.7957 },
-          { id: 'lake4', name: 'Lake Istokpoga', latitude: 27.3135, longitude: -81.3364 },
-          { id: 'pond2', name: 'Harmony Pond', latitude: 27.9725, longitude: -82.4193 },
-          { id: 'lake5', name: 'Lake Jackson (Sebring)', latitude: 27.4815, longitude: -81.4513 },
-          { id: 'lake6', name: 'Lake Tarpon', latitude: 28.1214, longitude: -82.7231 },
-          { id: 'river3', name: 'Myakka River', latitude: 27.1435, longitude: -82.3644 },
-          { id: 'pond3', name: 'Otter Pond', latitude: 26.6879, longitude: -81.8441 },
-          { id: 'lake7', name: 'Lake Manatee', latitude: 27.4703, longitude: -82.2850 },
-          { id: 'river4', name: 'Loxahatchee River', latitude: 26.9632, longitude: -80.1411 },
-          { id: 'lake8', name: 'Lake Apopka', latitude: 28.6253, longitude: -81.6420 },
-          { id: 'lake9', name: 'Blue Cypress Lake', latitude: 27.7356, longitude: -80.6992 },
-          { id: 'pond4', name: 'Cypress Pond', latitude: 28.0063, longitude: -82.4786 },
-          { id: 'river5', name: 'Withlacoochee River', latitude: 28.7795, longitude: -82.2672 },
-          { id: 'lake10', name: 'Lake Weohyakapka', latitude: 27.7681, longitude: -81.3144 },
-          { id: 'lake11', name: 'Lake Hollingsworth', latitude: 28.0284, longitude: -81.9462 },
+          { id: 'lake1', name: 'Lake Tahoe', latitude: 39.0968, longitude: -120.0324 },
+          { id: 'river1', name: 'Mississippi River', latitude: 35.1557, longitude: -90.0659 },
+          { id: 'pond1', name: 'Walden Pond, Massachusetts', latitude: 42.4384, longitude: -71.3420 },
+          { id: 'lake2', name: 'Lake Michigan', latitude: 43.4501, longitude: -87.2220 },
+          { id: 'lake3', name: 'Lake Superior', latitude: 47.7000, longitude: -87.5000 },
+          { id: 'river2', name: 'Colorado River', latitude: 36.1128, longitude: -113.9966 },
+          { id: 'lake4', name: 'Crater Lake', latitude: 42.9446, longitude: -122.1090 },
+          { id: 'pond2', name: 'Mirror Pond, Oregon', latitude: 44.0606, longitude: -121.3153 },
+          { id: 'lake5', name: 'Lake George, New York', latitude: 43.4262, longitude: -73.7123 },
+          { id: 'lake6', name: 'Lake Havasu', latitude: 34.4839, longitude: -114.3214 },
+          { id: 'river3', name: 'Columbia River', latitude: 45.6413, longitude: -121.9139 },
+          { id: 'pond3', name: 'Echo Park Lake, California', latitude: 34.0782, longitude: -118.2606 },
+          { id: 'lake7', name: 'Flathead Lake, Montana', latitude: 47.8762, longitude: -114.0930 },
+          { id: 'river4', name: 'Hudson River', latitude: 42.6500, longitude: -73.7572 },
+          { id: 'lake8', name: 'Lake Lanier, Georgia', latitude: 34.2154, longitude: -83.9494 },
+          { id: 'lake9', name: 'Lake Powell, Utah/Arizona', latitude: 37.0003, longitude: -111.4846 },
+          { id: 'pond4', name: 'Stow Lake, San Francisco', latitude: 37.7684, longitude: -122.4825 },
+          { id: 'river5', name: 'Snake River, Idaho', latitude: 43.5493, longitude: -112.4510 },
+          { id: 'lake10', name: 'Lake Champlain, Vermont/New York', latitude: 44.6000, longitude: -73.3500 },
+          { id: 'lake11', name: 'Lake Travis, Texas', latitude: 30.4057, longitude: -97.9209 },
+          { id: 'lake12', name: 'Lake Kissimmee', latitude: 27.8785, longitude: -81.3020 },
+          { id: 'river6', name: 'Peace River', latitude: 27.0231, longitude: -81.7957 },
+          { id: 'lake13', name: 'Lake Istokpoga', latitude: 27.3135, longitude: -81.3364 },
+          { id: 'pond5', name: 'Harmony Pond', latitude: 27.9725, longitude: -82.4193 },
+          { id: 'lake14', name: 'Lake Jackson (Sebring)', latitude: 27.4815, longitude: -81.4513 },
+          { id: 'lake15', name: 'Lake Tarpon', latitude: 28.1214, longitude: -82.7231 },
+          { id: 'river7', name: 'Myakka River', latitude: 27.1435, longitude: -82.3644 },
+          { id: 'lake16', name: 'Lake Okeechobee', latitude: 26.9387, longitude: -80.8022 },
      ];
 
      const radiationZones = [
@@ -144,22 +173,6 @@ const MapScreen = ({ navigation }) => {
           { id: 'farm20', name: 'Lancaster County, Pennsylvania', latitude: 40.0379, longitude: -76.3055 },
      ];
 
-     if (loading) {
-          return (
-               <View style={styles.container}>
-                    <ActivityIndicator size="large" color="#0000ff" />
-               </View>
-          );
-     }
-
-     if (errorMsg) {
-          return (
-               <View style={styles.container}>
-                    <Text>{errorMsg}</Text>
-               </View>
-          );
-     }
-
      return (
           <View style={styles.container}>
                <Image source={require('../../assets/images/logo-white.png')} style={styles.logo} />
@@ -168,18 +181,13 @@ const MapScreen = ({ navigation }) => {
                     onChangeText={setSearchText}
                     placeholder="Search locations..."
                     placeholderTextColor="#999"
+                    onSubmitEditing={handleSearch}
                     style={styles.searchInput}
                />
+
                <View style={styles.content}>
-                    {userLocation ? (
-                         <MapView
-                              ref={mapRef}
-                              style={styles.map}
-                              initialRegion={region}
-                              onMapReady={() => {
-                                   console.log('Map is ready');
-                              }}
-                         >
+                    <MapView style={styles.map} region={mapRegion} ref={mapRef}>
+                         {userLocation && (
                               <Marker
                                    coordinate={{
                                         latitude: userLocation.latitude,
@@ -192,40 +200,37 @@ const MapScreen = ({ navigation }) => {
                                         style={styles.userMarker}
                                    />
                               </Marker>
+                         )}
 
-                              {freshWaterSources.map((source) => (
-                                   <Marker key={source.id} coordinate={{ latitude: source.latitude, longitude: source.longitude }} title={source.name}>
-                                        <Image source={require('../../assets/images/wata.png')} style={styles.markerImage} />
-                                   </Marker>
-                              ))}
+                         {freshWaterSources.map((source) => (
+                              <Marker key={source.id} coordinate={{ latitude: source.latitude, longitude: source.longitude }} title={source.name}>
+                                   <Image source={require('../../assets/images/wata.png')} style={styles.markerImage} />
+                              </Marker>
+                         ))}
 
-                              {radiationZones.map((zone) => (
-                                   <Marker key={zone.id} coordinate={{ latitude: zone.latitude, longitude: zone.longitude }} title={zone.name}>
-                                        <Image source={require('../../assets/images/nuke.png')} style={styles.radiationMarker} />
-                                   </Marker>
-                              ))}
+                         {radiationZones.map((zone) => (
+                              <Marker key={zone.id} coordinate={{ latitude: zone.latitude, longitude: zone.longitude }} title={zone.name}>
+                                   <Image source={require('../../assets/images/nuke.png')} style={styles.radiationMarker} />
+                              </Marker>
+                         ))}
 
-                              {farmingZones.map((zone) => (
-                                   <Marker key={zone.id} coordinate={{ latitude: zone.latitude, longitude: zone.longitude }} title={zone.name}>
-                                        <Image source={require('../../assets/images/farm-land.png')} style={styles.farmMarker} />
-                                   </Marker>
-                              ))}
-                         </MapView>
-                    ) : (
-                         <View style={styles.container}>
-                              <Text>Waiting for location...</Text>
-                         </View>
-                    )}
+                         {farmingZones.map((zone) => (
+                              <Marker key={zone.id} coordinate={{ latitude: zone.latitude, longitude: zone.longitude }} title={zone.name}>
+                                   <Image source={require('../../assets/images/farm-land.png')} style={styles.farmMarker} />
+                              </Marker>
+                         ))}
+                    </MapView>
                </View>
+
+               <TouchableOpacity style={styles.locateButton} onPress={handleLocateButtonPress}>
+                    <Text style={styles.locateButtonText}>Locate Me</Text>
+               </TouchableOpacity>
           </View>
      );
 }
 
 const styles = StyleSheet.create({
-     container: {
-          flex: 1,
-          backgroundColor: '#4A4522',
-     },
+     container: { flex: 1, backgroundColor: '#4A4522' },
      logo: { width: 150, height: 40, resizeMode: 'contain', alignSelf: 'center', marginTop: 60, marginBottom: 20 },
      searchInput: { backgroundColor: '#fff', borderRadius: 25, paddingHorizontal: 20, paddingVertical: 10, marginHorizontal: 20, marginBottom: 20, fontSize: 16 },
      content: { flex: 1, backgroundColor: '#fff', borderTopLeftRadius: 30, borderTopRightRadius: 30, overflow: 'hidden' },
@@ -233,7 +238,17 @@ const styles = StyleSheet.create({
      markerImage: { width: 30, height: 30, resizeMode: 'contain' },
      radiationMarker: { width: 30, height: 30, resizeMode: 'contain' },
      farmMarker: { width: 30, height: 30, resizeMode: 'contain' },
-     userMarker: { width: 35, height: 35, resizeMode: 'contain' },
+     userMarker: { width: 40, height: 40, resizeMode: 'contain' },
+     locateButton: {
+          position: 'absolute',
+          bottom: 100,
+          left: '50%',
+          transform: [{ translateX: -75 }],
+          backgroundColor: '#007AFF',
+          paddingVertical: 15,
+          paddingHorizontal: 20,
+          borderRadius: 25,
+          elevation: 5,
+     },
+     locateButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });
-
-export default MapScreen;
