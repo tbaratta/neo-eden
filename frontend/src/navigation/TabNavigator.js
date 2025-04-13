@@ -75,6 +75,7 @@ const TabNavigator = () => {
               source={require('../../assets/pictures/navbar/4.png')}
               style={{ width: 35, height: 35, tintColor: color }}
               onError={() => console.error("Failed to load location icon")}
+            
             />
           ),
         }}
@@ -83,6 +84,7 @@ const TabNavigator = () => {
         name="Chat"
         component={ChatScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ color, size }) => (
             // Chat Icon - Replace with your image
             <Image
@@ -103,6 +105,7 @@ const TabNavigator = () => {
               source={require('../../assets/pictures/navbar/2.png')}
               style={{ width: 35, height: 35, tintColor: color }}
               onError={() => console.error("Failed to load location icon")}
+              screenOptions={{headerShown: false}}
             />
           ),
         }}

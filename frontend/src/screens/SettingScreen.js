@@ -1,17 +1,23 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 
+import { useLayoutEffect } from 'react';
+
 export default function SettingsScreen({ navigation }) {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
   const handleClearCache = () => {
     alert('🧹 Cache cleared');
   };
 
   const handleProfile = () => {
-    alert('👤 Navigate to profile settings');
+    navigation.navigate('Profile');
   };
-
   const handleWaypoints = () => {
-    alert('📍 Edit waypoints');
+    navigation.navigate('Waypoints');
   };
 
   const handleLogout = () => {
@@ -25,11 +31,24 @@ export default function SettingsScreen({ navigation }) {
         flexGrow: 1,
         backgroundColor: '#49441f',
         alignItems: 'center',
-        paddingTop: 32,
+        paddingTop: 40,
         paddingHorizontal: 24,
         paddingBottom: 80, // Leaves space for tab bar
       }}
     >
+      {/* Back Button */}
+      <TouchableOpacity
+        style={{
+          position: 'absolute',
+          top: 60,
+          left: 20,
+          zIndex: 1,
+        }}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={{ color: '#fff', fontSize: 18 }}>Back</Text>
+      </TouchableOpacity>
+
       {/* Massive Logo */}
       <Image
         source={require('../../assets/images/logo-white.png')}
@@ -44,7 +63,7 @@ export default function SettingsScreen({ navigation }) {
       {/* Raised and Shorter Settings Panel */}
       <View
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: '#ffff',
           width: '100%',
           borderRadius: 28,
           padding: 28,
@@ -69,20 +88,7 @@ export default function SettingsScreen({ navigation }) {
           Settings
         </Text>
 
-        <TouchableOpacity
-          onPress={handleClearCache}
-          style={{
-            backgroundColor: '#2b2b2b',
-            paddingVertical: 20,
-            borderRadius: 14,
-            marginBottom: 16,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>
-            🧹 Clear Cache
-          </Text>
-        </TouchableOpacity>
+
 
         <TouchableOpacity
           onPress={handleProfile}
@@ -128,8 +134,7 @@ export default function SettingsScreen({ navigation }) {
             🚪 Log Out
           </Text>
         </TouchableOpacity>
-      </View>
-
+        </View>
       {/* Light footer still above nav bar */}
       <View style={{ marginTop: 28, alignItems: 'center' }}>
         <Text style={{ color: '#ccc', fontSize: 16 }}>Neo Eden v1.0.0</Text>
@@ -138,3 +143,4 @@ export default function SettingsScreen({ navigation }) {
     </ScrollView>
   );
 }
+
