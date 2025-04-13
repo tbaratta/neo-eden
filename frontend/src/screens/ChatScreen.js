@@ -2,7 +2,14 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { sendMessage } from '../config/api';
 
-export default function ChatBox() {
+import { useLayoutEffect } from 'react';
+
+export default function ChatBox({ navigation }) {
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerShown: false,
+    });
+  }, [navigation]);
   const [inputMessage, setInputMessage] = useState('');
   const [chatHistory, setChatHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -58,9 +65,13 @@ export default function ChatBox() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.backArrow}>←</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+          <Text style={[styles.backArrow, { color: '#fff', fontSize: 18 }]}>Back</Text>
+        </TouchableOpacity>
         <Text style={styles.title}>BOB THE GUIDE</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('ChatHistory')}>
         <Text style={styles.icon}>📝</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Chat Area */}
@@ -132,7 +143,9 @@ export default function ChatBox() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    backgroundColor: '#49441f',
+    paddingTop: 60,
+    paddingHorizontal: 20,
   },
   header: {
     flexDirection: 'row',
@@ -159,7 +172,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     borderWidth: 2,
     borderColor: '#9C5DFF',
-    marginBottom: 20,
+    marginBottom: 5,
   },
   chatContent: {
     padding: 15,
@@ -210,8 +223,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 30,
-    paddingHorizontal: 20,
-    height: 50,
+    paddingHorizontal: 5,
+    height: 30,
   },
   input: {
     flex: 1,

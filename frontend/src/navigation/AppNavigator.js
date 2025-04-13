@@ -7,7 +7,8 @@ import RegisterScreen from '../screens/RegisterScreen';
 import TabNavigator from './TabNavigator';
 import ProfileScreen from '../screens/ProfileScreen';
 import WaypointsScreen from '../screens/WaypointsScreen';
-
+import ChatHistoryScreen from '../screens/ChatHistoryScreen';
+import HomeScreen from '../screens/HomeScreen'
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
@@ -18,11 +19,11 @@ const AppNavigator = () => {
           headerShown: false
         }}
       >        
-      
-      <Stack.Screen name="Tabs" component={TabNavigator} screenOptions={{headerShown: false}}/>
+        <Stack.Screen name="Tabs" component={TabNavigator} />
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Waypoints" component={WaypointsScreen} />
+        <Stack.Screen name="ChatHistory" component={ChatHistoryScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
