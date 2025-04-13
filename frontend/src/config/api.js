@@ -1,7 +1,38 @@
+import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 import axios from 'axios';
 
-// For iPhone using Expo Go, use your computer's local IP address
-const API_URL = 'http://10.245.4.2:5000/api';  // Your WiFi IP address
+// Get the local IP address for development
+const localhost = Platform.select({
+  ios: Constants.expoConfig?.hostUri?.split(':')[0] ?? '192.168.1.1',
+  android: '10.0.2.2',
+  default: 'localhost'
+});
+
+// API Configuration
+const DEV_API_URL = `http://${localhost}:5000/api`;
+const PROD_API_URL = 'https://your-production-url.com/api'; // Update this when you have a production URL
+
+export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
+
+export const API_ENDPOINTS = {
+  login: '/auth/login',
+  register: '/auth/register',
+  // Add other endpoints as needed
+};
+
+// API Headers
+export const getHeaders = (token = null) => {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return headers;
+};
 
 // Create an axios instance with custom config
 const api = axios.create({
@@ -12,32 +43,63 @@ const api = axios.create({
   }
 });
 
+// Add response interceptor for better error handling
+api.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API Error:', {
+      url: error.config?.url,
+      method: error.config?.method,
+      data: error.config?.data,
+      status: error.response?.status,
+      response: error.response?.data
+    });
+    return Promise.reject(error);
+  }
+);
+
+export const authAPI = {
+  login: async (email, password) => {
+    try {
+      console.log('Attempting login for:', email);
+      const response = await api.post('/auth/login', { email, password });
+      console.log('Login response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Login error details:', {
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error.response?.data?.message || 'Login failed. Please try again.';
+    }
+  },
+
+  register: async (userData) => {
+    try {
+      console.log('Attempting registration for:', userData.email);
+      const response = await api.post('/auth/register', userData);
+      console.log('Registration response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Registration error details:', {
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error.response?.data?.message || 'Registration failed. Please try again.';
+    }
+  }
+};
+
 export const sendMessage = async (message) => {
   try {
-    console.log('Sending message to:', `${API_URL}/gemini/ask`);
-    const response = await api.post('/gemini/ask', {
-      prompt: message
-    });
-
-    console.log('Response received:', response.data);
+    const response = await api.post('/gemini/ask', { prompt: message });
     return {
       reply: response.data.reply || response.data.message || 'No response received'
     };
   } catch (error) {
-    if (error.code === 'ECONNABORTED') {
-      console.error('Request timed out. The server took too long to respond.');
-      throw new Error('Request timed out. Please try again.');
-    } else if (error.message === 'Network Error') {
-      console.error(`Cannot connect to the server at ${API_URL}. Check if the backend is running and accessible.`);
-      throw new Error('Cannot connect to the server. Please check your connection and backend server.');
-    } else {
-      console.error('Error details:', {
-        message: error.message,
-        response: error.response?.data,
-        status: error.response?.status,
-        url: API_URL
-      });
-      throw new Error(error.response?.data?.message || 'An error occurred while processing your request.');
-    }
+    console.error('Message error:', error);
+    throw new Error('Failed to send message. Please try again.');
   }
 };
+
+export default api;

@@ -10,6 +10,7 @@ dotenv.config();
 import resources from './routes/resources.js';
 import users from './routes/user.js';
 import analyses from './routes/analysis.js';
+import auth from './routes/auth.js';
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use(express.json());
 
 // API Routes
+app.use('/api/auth', auth);
 app.use('/api/resources', resources);
 app.use('/api/users', users);
 app.use('/api/analysis', analyses);

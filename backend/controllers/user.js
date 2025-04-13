@@ -198,13 +198,13 @@ export const updateBaseLocation = async (req, res) => {
 // Get nearby users
 export const getNearbyUsers = async (req, res) => {
   try {
-    const { longitude, latitude, radius } = req.query;
-    const nearbyUsers = await User.getNearbyUsers(
+    const { longitude, latitude, maxDistance } = req.query;
+    const users = await User.getNearbyUsers(
       parseFloat(longitude),
       parseFloat(latitude),
-      parseInt(radius) || 5000
+      maxDistance ? parseFloat(maxDistance) : undefined
     );
-    res.json(nearbyUsers);
+    res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
