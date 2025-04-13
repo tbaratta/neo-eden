@@ -9,9 +9,6 @@ export default function SettingsScreen({ navigation }) {
       headerShown: false,
     });
   }, [navigation]);
-  const handleClearCache = () => {
-    alert('🧹 Cache cleared');
-  };
 
   const handleProfile = () => {
     navigation.navigate('Profile');
@@ -36,18 +33,6 @@ export default function SettingsScreen({ navigation }) {
         paddingBottom: 80, // Leaves space for tab bar
       }}
     >
-      {/* Back Button */}
-      <TouchableOpacity
-        style={{
-          position: 'absolute',
-          top: 60,
-          left: 20,
-          zIndex: 1,
-        }}
-        onPress={() => navigation.goBack()}
-      >
-        <Text style={{ color: '#fff', fontSize: 18 }}>Back</Text>
-      </TouchableOpacity>
 
       {/* Massive Logo */}
       <Image

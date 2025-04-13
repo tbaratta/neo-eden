@@ -65,10 +65,9 @@ export default function ChatBox({ navigation }) {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Text style={[styles.backArrow, { color: '#fff', fontSize: 18 }]}>Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>BOB THE GUIDE</Text>
+        <View style={{ alignItems: 'center', flex: 1 }}>
+          <Text style={styles.title}>BOB THE GUIDE</Text>
+        </View>
         <TouchableOpacity onPress={() => navigation.navigate('ChatHistory')}>
         <Text style={styles.icon}>📝</Text>
         </TouchableOpacity>
@@ -164,6 +163,7 @@ const styles = StyleSheet.create({
   icon: {
     color: '#fff',
     fontSize: 22,
+    gap: 100, 
   },
   chatArea: {
     flex: 1,
