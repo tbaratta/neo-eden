@@ -86,11 +86,12 @@ const styles = StyleSheet.create({
           backgroundColor: '#1a1a1a',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: 24,
+          paddingHorizontal: 32, // was 24
+          paddingVertical: 40,   // add top/bottom breathing room too
      },
      logo: {
           width: '100%',
-          height: 200,
+          height: 150,
           minHeight: 150,
           aspectRatio: 5.5,
           marginBottom: 40,
