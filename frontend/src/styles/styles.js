@@ -74,4 +74,83 @@ export default StyleSheet.create({
     paddingHorizontal: 15,
     fontSize: 16,
   },
+    container: {
+      flex: 1,
+      backgroundColor: '#49441f',
+      paddingTop: 40,
+      paddingHorizontal: 16,
+    },
+    heading: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: '#fff',
+      marginBottom: 16,
+      textAlign: 'center',
+    },
+    filterRow: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      gap: 8,
+      marginBottom: 12,
+    },
+    filterButton: {
+      paddingVertical: 6,
+      paddingHorizontal: 12,
+      backgroundColor: '#2b2b2b',
+      borderRadius: 6,
+    },
+    activeFilter: {
+      backgroundColor: '#ffcc00',
+    },
+    filterText: {
+      color: '#fff',
+      fontWeight: '600',
+    },
+    submitButton: {
+      backgroundColor: '#2b2b2b',
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      alignSelf: 'center',
+      marginBottom: 16,
+    },
+    submitButtonText: {
+      color: '#ffcc00',
+      fontWeight: '600',
+      fontSize: 14,
+    },
+    listPadding: {
+      paddingBottom: 16,
+    },
+    alertWrapper: {
+      paddingHorizontal: 8,
+    },
+    alertCard: {
+      backgroundColor: '#2b2b2b',
+      padding: 16,
+      borderRadius: 8,
+      marginBottom: 12,
+      borderLeftWidth: 4,
+      borderLeftColor: '#ffcc00',
+    },
+    title: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#fff',
+      marginBottom: 4,
+    },
+    meta: {
+      color: '#ddd',
+      fontSize: 14,
+    },
+    distanceText: {
+      color: '#ccc',
+      fontSize: 13,
+      marginTop: 2,
+    },
+    timestamp: {
+      color: '#bbb',
+      fontSize: 12,
+      marginTop: 4,
+    }
 });

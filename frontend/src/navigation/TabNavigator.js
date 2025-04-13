@@ -11,7 +11,7 @@ export default function NavBar() {
         <Image source={require('../../assets/pictures/navbar/7.png')} style={styles.icon} />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Map')}>
+      <TouchableOpacity onPress={() => navigation.navigate('News')}>
         <Image source={require('../../assets/pictures/navbar/6.png')} style={styles.icon} />
       </TouchableOpacity>
 
