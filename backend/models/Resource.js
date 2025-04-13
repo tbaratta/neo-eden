@@ -19,10 +19,6 @@ const resourceSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  description: {
-    type: String,
-    trim: true
-  },
   location: {
     type: pointSchema,
     required: true,
@@ -46,18 +42,14 @@ const resourceSchema = new mongoose.Schema({
   markerType: {
     type: String,
     required: true,
-    enum: ['DEFAULT', 'QUEST', 'VENDOR', 'ENEMY', 'RESOURCE', 'SAFE_ZONE', 'DANGER_ZONE'],
+    enum: ['DEFAULT', 'RESOURCE', 'SAFE_ZONE', 'DANGER_ZONE'],
     default: 'DEFAULT'
   },
   zone: {
     type: String,
     required: true,
-    enum: ['SAFE', 'NEUTRAL', 'DANGER', 'PVP', 'EVENT'],
+    enum: ['SAFE', 'NEUTRAL', 'DANGER'],
     default: 'NEUTRAL'
-  },
-  zoneColor: {
-    type: String,
-    default: '#808080' // Default gray color
   },
   status: {
     type: String,
@@ -78,55 +70,10 @@ const resourceSchema = new mongoose.Schema({
       default: Date.now
     }
   },
-  reliability: {
-    type: Number,
-    default: 0,
-    min: 0,
-    max: 100
-  },
-  images: [{
-    url: String,
-    caption: String,
-    dateAdded: {
-      type: Date,
-      default: Date.now
-    }
-  }],
-  analysis: {
-    soilType: String,         // For FARMLAND
-    waterQuality: String,     // For WATER
-    radiationLevel: String,   // For RADIATION
-    dangerLevel: {
-      type: String,
-      enum: ['LOW', 'MEDIUM', 'HIGH', 'EXTREME'],
-      default: 'LOW'
-    }
-  },
-  seasonality: {
-    isSeasonal: {
-      type: Boolean,
-      default: false
-    },
-    activeMonths: [{
-      type: Number,
-      min: 1,
-      max: 12
-    }]
-  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  verifiedBy: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    },
-    date: {
-      type: Date,
-      default: Date.now
-    }
-  }],
   createdAt: {
     type: Date,
     default: Date.now

@@ -1,18 +1,33 @@
-import React from 'react';
-import { TouchableOpacity } from 'react-native';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { TouchableOpacity, View, Text, Image, StyleSheet } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
-import { useNavigation } from '@react-navigation/native';
-
-const ProfileScreen = () => {
+export default function ProfileScreen({ route }) {
   const navigation = useNavigation();
-  // Dummy data for the user profile
-  const user = {
-    fullName: 'John Doe',
-    email: 'john.doe@example.com',
-    username: 'johndoe',
-    profilePic: require('../../assets/pictures/navbar/avatar.jpg'), 
-  };
+
+  const [user, setUser] = useState({
+    fullName: 'Loading...',
+    email: 'Loading...',
+    username: 'Loading...',
+    profilePic: require('../../assets/pictures/navbar/avatar.jpg'),
+  });
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Simulate fetching user data, or use route.params if passed
+      if (route.params?.userData) {
+        setUser(route.params.userData);
+      } else {
+        // Replace with real fetch if needed
+        setUser({
+          fullName: 'John Doe',
+          email: 'john.doe@example.com',
+          username: 'johndoe',
+          profilePic: require('../../assets/pictures/navbar/avatar.jpg'),
+        });
+      }
+    }, [route.params])
+  );
 
   return (
     <View style={{ ...styles.container, backgroundColor: '#49441f' }}>
@@ -28,50 +43,47 @@ const ProfileScreen = () => {
       >
         <Text style={{ color: '#fff', fontSize: 18 }}>Back</Text>
       </TouchableOpacity>
+
+      {/* Profile Info */}
       <View style={styles.infoContainer}>
-        <Image source={user.profilePic} style={styles.profilePic} />
-        <Text style={styles.fullName}>Full Name: {user.fullName}</Text>
-        <Text style={styles.email}>Email: {user.email}</Text>
-        <Text style={styles.username}>Username: {user.username}</Text>
+        <Image source={user.profilePic} style={styles.avatar} />
+        <Text style={styles.name}>{user.fullName}</Text>
+        <Text style={styles.username}>@{user.username}</Text>
+        <Text style={styles.email}>{user.email}</Text>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 100,
     alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
   },
   infoContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 20,
     alignItems: 'center',
+    marginTop: 40,
   },
-  text: {
-    color: '#fff',
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
-  profilePic: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 20,
-  },
-  fullName: {
-    fontSize: 22,
+  name: {
+    fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  email: {
-    fontSize: 18,
-    marginBottom: 10,
+    color: '#fff',
+    marginTop: 10,
   },
   username: {
     fontSize: 18,
+    color: '#ccc',
+    marginTop: 5,
+  },
+  email: {
+    fontSize: 16,
+    color: '#aaa',
+    marginTop: 5,
   },
 });
-
-export default ProfileScreen;
