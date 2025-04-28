@@ -69,7 +69,7 @@ export default function CameraScreen({ navigation }) {
 
           try {
                // Make API request
-               const response = await fetch('http://10.245.6.249:3000/api/gemini/analyze', {
+               const response = await fetch('http://10.0.0.252:3000/api/gemini/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({

@@ -4,22 +4,33 @@ import axios from 'axios';
 
 // Get the local IP address for development
 const localhost = Platform.select({
-  ios: Constants.expoConfig?.hostUri?.split(':')[0] ?? '192.168.1.1',
+  ios: Constants.expoConfig?.hostUri?.split(':')[0] ?? '10.0.0.252',
   android: '10.0.2.2',
   default: 'localhost'
 });
 
+
+
 // API Configuration
-const DEV_API_URL = `http://${localhost}:5000/api`;
+const DEV_API_URL = `http://${localhost}:3000/api`;
 const PROD_API_URL = 'https://your-production-url.com/api'; // Update this when you have a production URL
 
 export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
 
+// // API Configuration
+// const DEV_API_URL = `http://10.0.0.252:3000/api`;;
+// const PROD_API_URL = 'https://your-production-url.com/api'; // Update this when you have a production URL
+
+// //export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
+// const API_URL = `http://10.0.0.252:3000/api`;
+
+
+
 export const API_ENDPOINTS = {
   login: '/auth/login',
   register: '/auth/register',
-  // Add other endpoints as needed
 };
+
 
 // API Headers
 export const getHeaders = (token = null) => {
@@ -62,7 +73,7 @@ export const authAPI = {
   login: async (email, password) => {
     try {
       console.log('Attempting login for:', email);
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post(API_ENDPOINTS.login, { email, password });
       console.log('Login response:', response.data);
       return response.data;
     } catch (error) {
@@ -77,7 +88,7 @@ export const authAPI = {
   register: async (userData) => {
     try {
       console.log('Attempting registration for:', userData.email);
-      const response = await api.post('/auth/register', userData);
+      const response = await api.post(API_ENDPOINTS.register, userData);
       console.log('Registration response:', response.data);
       return response.data;
     } catch (error) {

@@ -82,16 +82,18 @@ export const register = async (req, res) => {
                 message: 'User registered successfully',
                 user: userResponse
             });
-        } catch (saveError) {
-            console.error('\nError saving user:', {
-                error: saveError.message,
-                code: saveError.code,
-                keyPattern: saveError.keyPattern,
-                keyValue: saveError.keyValue,
-                stack: saveError.stack
+        }  catch (error) {
+            console.error('🔥 Registration error details:', {
+              name: error.name,
+              message: error.message,
+              code: error.code,
+              keyPattern: error.keyPattern,
+              keyValue: error.keyValue,
+              stack: error.stack
             });
-            throw saveError;
-        }
+            return res.status(500).json({ message: 'Server error during registration', error: error.message });
+          }
+          
     } catch (error) {
         console.error('\nRegistration error details:', {
             name: error.name,
