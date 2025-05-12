@@ -17,14 +17,6 @@ const PROD_API_URL = 'https://your-production-url.com/api'; // Update this when 
 
 export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
 
-// // API Configuration
-// const DEV_API_URL = `http://10.0.0.252:3000/api`;;
-// const PROD_API_URL = 'https://your-production-url.com/api'; // Update this when you have a production URL
-
-// //export const API_URL = __DEV__ ? DEV_API_URL : PROD_API_URL;
-// const API_URL = `http://10.0.0.252:3000/api`;
-
-
 
 export const API_ENDPOINTS = {
   login: '/auth/login',
