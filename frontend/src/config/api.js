@@ -4,8 +4,8 @@ import axios from 'axios';
 
 // Get the local IP address for development
 const localhost = Platform.select({
-  ios: Constants.expoConfig?.hostUri?.split(':')[0] ?? '10.0.0.252',
-  android: '10.0.2.2',
+  ios: Constants.expoConfig?.hostUri?.split(':')[0] ?? 'Input IP Here',
+  android: 'Input IP Here',
   default: 'localhost'
 });
 
